@@ -4,7 +4,7 @@
   hosts: all
   gather_facts: false
   vars_files:
-    - vars/proxmox.yml
+    - vars/proxmox.yaml
 
   #collections:
   #  - community.general
@@ -39,7 +39,7 @@
       register: clone_result
 
     - name: Crear VM base (si NO usamos plantilla)
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         api_host: "{{ proxmox_api_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
@@ -69,7 +69,7 @@
       when: use_cloud_init | bool
       block:
         - name: Aplicar parámetros Cloud-Init (usuario, SSH, red)
-          community.general.proxmox_kvm:
+          community.proxmox.proxmox_kvm:
             api_host: "{{ proxmox_api_host }}"
             api_user: "{{ proxmox_api_user }}"
             api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
@@ -100,7 +100,7 @@
             state: present
 
     - name: Encender la VM
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         api_host: "{{ proxmox_api_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
@@ -118,7 +118,7 @@
       until: vm_ip is defined and vm_ip | length > 0
       block:
         - name: Obtener info de VM (para extraer IP)
-          community.general.proxmox_vm_info:
+          community.proxmox.proxmox_vm_info:
             api_host: "{{ proxmox_api_host }}"
             api_user: "{{ proxmox_api_user }}"
             api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
