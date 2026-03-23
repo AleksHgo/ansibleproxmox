@@ -1,9 +1,9 @@
 ---
 # vars/proxmox.yml
-proxmox_api_host: "proxmox.tudominio.local"   # o IP del nodo/cluster
+proxmox_api_host: "10.10.201.2"   # o IP del nodo/cluster
 proxmox_api_user: "root@pam"                  # o usuario@realm
 proxmox_api_token_id: "ansible"               # nombre del token (si usas API token)
-proxmox_api_token_secret: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+proxmox_api_token_secret: "x93aa302b-aff8-4e54-9f59-0561ab254dcd"
 
 # Si prefieres password en lugar de token, usa:
 # proxmox_api_password: "tu_password"
@@ -24,7 +24,7 @@ vm_description: "Creada por Ansible"
 
 # Para cloud-init:
 use_cloud_init: true
-ci_storage: "local-lvm"           # dónde va el disco CI si aplica (o "local")
+ci_storage: "Storage-LVM-01"           # dónde va el disco CI si aplica (o "local")
 ci_user: "devops"
 ci_password: ""                   # si prefieres password; si usas SSH key, puedes dejarlo vacío
 ci_ssh_authorized_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI.... tu_llave_pub"
@@ -33,5 +33,5 @@ ci_dns_servers: "1.1.1.1 8.8.8.8"
 ci_dns_domain: "lab.local"
 
 # Plantilla (opcional, en vez de ISO). Si la usas, pon vm_from_template: true
-vm_from_template: false
-vm_template_name: "ubuntu-cloud-jammy-template"  # nombre exacto de la plantilla si aplica
+vm_from_template: true
+vm_template_name: "WS2022"  # nombre exacto de la plantilla si aplica
