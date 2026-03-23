@@ -8,6 +8,7 @@
 
   collections:
     - community.general
+    - community.proxmox
 
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
