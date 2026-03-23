@@ -1,0 +1,152 @@
+---
+# create_proxmox_vm.yml
+- name: Crear VM en Proxmox
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yml
+
+  collections:
+    - community.general
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: Crear VM desde plantilla (si aplica)
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        api_password: "{{ proxmox_api_password | default(omit) }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        pool: "{{ vm_pool | default(omit) }}"
+        clone: "{{ vm_template_name }}"
+        full: true
+        timeout: 300
+        state: present
+      when: vm_from_template | bool
+      register: clone_result
+
+    - name: Crear VM base (si NO usamos plantilla)
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        api_password: "{{ proxmox_api_password | default(omit) }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        pool: "{{ vm_pool | default(omit) }}"
+        sockets: 1
+        cores: "{{ vm_cores }}"
+        memory: "{{ vm_memory_mb }}"
+        scsihw: "virtio-scsi-pci"
+        ide2: "{{ vm_iso_storage }}:{{ vm_iso_file }},media=cdrom"
+        sata0: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        net0: "virtio,bridge={{ vm_bridge }}{% if vm_vlan is defined %},tag={{ vm_vlan }}{% endif %}"
+        onboot: true
+        agent: 1
+        ostype: "l26"
+        boot: "order=scsi0;ide2;net0"
+        kvm: true
+        state: present
+      when: not vm_from_template | bool
+      register: create_result
+
+    - name: Configurar Cloud-Init (si aplica)
+      when: use_cloud_init | bool
+      block:
+        - name: Aplicar parámetros Cloud-Init (usuario, SSH, red)
+          community.general.proxmox_kvm:
+            api_host: "{{ proxmox_api_host }}"
+            api_user: "{{ proxmox_api_user }}"
+            api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+            api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+            api_password: "{{ proxmox_api_password | default(omit) }}"
+            node: "{{ proxmox_node }}"
+            vmid: "{{ vm_id }}"
+            ciuser: "{{ ci_user }}"
+            cipassword: "{{ (ci_password | length > 0) | ternary(ci_password, omit) }}"
+            sshkeys: "{{ ci_ssh_authorized_key | default(omit) }}"
+            nameserver: "{{ ci_dns_servers | default(omit) }}"
+            searchdomain: "{{ ci_dns_domain | default(omit) }}"
+            ipconfig:
+              - "{{ ci_ip_config }}"
+            ide2: "{{ ci_storage }}:cloudinit"
+            state: present
+
+        - name: Asegurar qemu-guest-agent habilitado
+          community.general.proxmox_kvm:
+            api_host: "{{ proxmox_api_host }}"
+            api_user: "{{ proxmox_api_user }}"
+            api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+            api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+            api_password: "{{ proxmox_api_password | default(omit) }}"
+            node: "{{ proxmox_node }}"
+            vmid: "{{ vm_id }}"
+            agent: 1
+            state: present
+
+    - name: Encender la VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        api_password: "{{ proxmox_api_password | default(omit) }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        state: started
+
+    - name: Esperar a que el agente reporte IP (hasta 5 minutos)
+      vars:
+        wait_retries: 30   # 30 * 10s = 300s
+      retries: "{{ wait_retries }}"
+      delay: 10
+      until: vm_ip is defined and vm_ip | length > 0
+      block:
+        - name: Obtener info de VM (para extraer IP)
+          community.general.proxmox_vm_info:
+            api_host: "{{ proxmox_api_host }}"
+            api_user: "{{ proxmox_api_user }}"
+            api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+            api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+            api_password: "{{ proxmox_api_password | default(omit) }}"
+            vmid: "{{ vm_id }}"
+          register: vm_info
+
+        - name: Parsear IP desde qemu-guest-agent si disponible
+          set_fact:
+            vm_ip: >-
+              {{
+                (
+                  vm_info.vms[0].ipconfig |
+                  default([]) |
+                  selectattr('ip-addresses', 'defined') |
+                  list |
+                  map(attribute='ip-addresses') |
+                  sum(start=[]) |
+                  select('match', '^[0-9.]+$') |
+                  list
+                ) | first | default('')
+              }}
+      rescue:
+        - set_fact:
+            vm_ip: ""
+
+    - name: Mostrar resultado final
+      debug:
+        msg:
+          - "VM {{ vm_name }} (ID {{ vm_id }}) creada y encendida en {{ proxmox_node }}"
+          - "IP detectada: {{ vm_ip | default('no disponible') }}"

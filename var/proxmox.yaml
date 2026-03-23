@@ -1,0 +1,37 @@
+---
+# vars/proxmox.yml
+proxmox_api_host: "proxmox.tudominio.local"   # o IP del nodo/cluster
+proxmox_api_user: "root@pam"                  # o usuario@realm
+proxmox_api_token_id: "ansible"               # nombre del token (si usas API token)
+proxmox_api_token_secret: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Si prefieres password en lugar de token, usa:
+# proxmox_api_password: "tu_password"
+
+proxmox_node: "pve"               # nombre del nodo destino (p.ej. pve1)
+vm_id: 110                        # ID único de VM en Proxmox
+vm_name: "vm-ansible-demo"
+vm_cores: 2
+vm_memory_mb: 4096
+vm_disk_gb: 20
+vm_bridge: "vmbr0"
+vm_vlan: 20                       # opcional, si no usas VLAN, quítalo
+vm_storage: "local-lvm"           # storage para el disco
+vm_iso_storage: "local"           # storage donde vive la ISO
+vm_iso_file: "iso/ubuntu-22.04.4-live-server-amd64.iso" # ruta relativa al storage
+vm_pool: "devops"                 # opcional: asignar a un pool
+vm_description: "Creada por Ansible"
+
+# Para cloud-init:
+use_cloud_init: true
+ci_storage: "local-lvm"           # dónde va el disco CI si aplica (o "local")
+ci_user: "devops"
+ci_password: ""                   # si prefieres password; si usas SSH key, puedes dejarlo vacío
+ci_ssh_authorized_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI.... tu_llave_pub"
+ci_ip_config: "dhcp"              # "dhcp" o "ip=192.168.1.50/24,gw=192.168.1.1"
+ci_dns_servers: "1.1.1.1 8.8.8.8"
+ci_dns_domain: "lab.local"
+
+# Plantilla (opcional, en vez de ISO). Si la usas, pon vm_from_template: true
+vm_from_template: false
+vm_template_name: "ubuntu-cloud-jammy-template"  # nombre exacto de la plantilla si aplica
