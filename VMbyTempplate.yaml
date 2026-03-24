@@ -1,0 +1,56 @@
+---
+# create_proxmox_vm.yml
+- name: Crear VM en Proxmox
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  collections:
+    - community.general
+    - community.proxmox
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: Crear VM desde plantilla (si aplica)
+      community.proxmox.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        api_password: "{{ proxmox_api_password | default(omit) }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        pool: "{{ vm_pool | default(omit) }}"
+        clone: "{{ vm_template_name }}"
+        full: true
+        timeout: 300
+        state: present
+      when: vm_from_template | bool
+      register: clone_result
+
+    - name: Encender la VM
+      community.proxmox.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        api_password: "{{ proxmox_api_password | default(omit) }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        state: started
+
+    - name: Mostrar resultado final
+      debug:
+        msg:
+          - "VM {{ vm_name }} (ID {{ vm_id }}) creada y encendida en {{ proxmox_node }}"
+          - "IP detectada: {{ vm_ip | default('no disponible') }}"
