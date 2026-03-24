@@ -111,9 +111,9 @@
         state: started
 
     - name: Esperar a que el agente reporte IP (hasta 5 minutos)
-      vars:
-        wait_retries: 30   # 30 * 10s = 300s
-      retries: "{{ wait_retries }}"
+      #vars:
+      #  wait_retries: 30   # 30 * 10s = 300s
+      #retries: "{{ wait_retries }}"
       delay: 10
       until: vm_ip is defined and vm_ip | length > 0
       block:
