@@ -28,11 +28,11 @@
         api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
         api_password: "{{ proxmox_api_password | default(omit) }}"
         node: "{{ proxmox_node }}"
-        
-        name: "{{ vm_name }}"
+        name: "{{ vm_name }}1"
+        vmid: "108"
         pool: "{{ vm_pool | default(omit) }}"
         clone: "{{ vm_template_name }}"
-        full: true
+        full: false
         timeout: 300
         state: present
       when: vm_from_template | bool
