@@ -29,7 +29,7 @@
         api_password: "{{ proxmox_api_password | default(omit) }}"
         node: "{{ proxmox_node }}"
         name: "{{ vm_name }}1"
-        vmid: "108"
+        vmid: 108
         pool: "{{ vm_pool | default(omit) }}"
         clone: "{{ vm_template_name }}"
         full: false
