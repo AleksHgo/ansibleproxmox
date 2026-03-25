@@ -1,0 +1,67 @@
+---
+# create_proxmox_vm.yml
+- name: Agregar disco a Proxmox VM
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  collections:
+    - community.general
+    - community.proxmox
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+
+    proxmox_auth: &proxmox_auth
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: Obtiene informacion de la VM
+      community.proxmox.proxmox_vm_info:
+        #api_host: "{{ proxmox_api_host }}"
+        #api_user: "{{ proxmox_api_user }}"
+        #api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        #api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        <<: *proxmox_auth
+        vmid: "{{ vm_id }}"
+        node: "{{ proxmox_node }}"
+      register: vm_info_result
+    
+    - name: Show VM status
+      ansible.builtin.debug:
+        msg: "Current VM status is {{ vm_info_result.proxmox_vms[0].status }}"
+      when: vm_info_result.proxmox_vms | length > 0
+
+    - name: apagar la VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"
+        vmid: clone_result.vmid
+        state: stopped
+        force: false
+      when: vm_info_result.proxmox_vms | length > 0 and vm_info_result.proxmox_vms[0].status == "running"
+      register: stop_task_result 
+
+    - name: Agregar nuevo disco a la VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        sata1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        state: present
+
+    - name: Mostrar resultado final
+      debug:
+        msg:
+          - "VM {{ vm_name }} (ID {{ vm_id }}) creada y encendida en {{ proxmox_node }}"
+          - "IP detectada: {{ vm_ip | default('no disponible') }}"

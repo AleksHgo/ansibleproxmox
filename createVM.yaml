@@ -107,7 +107,7 @@
         api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
         api_password: "{{ proxmox_api_password | default(omit) }}"
         node: "{{ proxmox_node }}"
-        vmid: "{{ vm_id }}"
+        vmid: clone_result.vmid
         state: started
 
     - name: Esperar a que el agente reporte IP (hasta 5 minutos)
