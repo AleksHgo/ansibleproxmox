@@ -13,6 +13,12 @@
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
+    proxmox_auth: &proxmox_auth
+    api_host: "{{ proxmox_api_host }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+    api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+
   tasks:
     - name: Validar credenciales (token o password)
       assert:
@@ -22,11 +28,12 @@
 
     - name: Crear VM desde plantilla (si aplica)
       community.proxmox.proxmox_kvm:
-        api_host: "{{ proxmox_api_host }}"
-        api_user: "{{ proxmox_api_user }}"
-        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
-        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
-        api_password: "{{ proxmox_api_password | default(omit) }}"
+        # api_host: "{{ proxmox_api_host }}"
+        # api_user: "{{ proxmox_api_user }}"
+        # api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        # api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        # api_password: "{{ proxmox_api_password | default(omit) }}"
+        <<: *proxmox_auth
         node: "{{ proxmox_node }}"
         name: "{{ vm_name }}1"
         clone: "{{ vm_template_name }}"
@@ -38,11 +45,12 @@
 
     - name: Encender la VM
       community.proxmox.proxmox_kvm:
-        api_host: "{{ proxmox_api_host }}"
-        api_user: "{{ proxmox_api_user }}"
-        api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
-        api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
-        api_password: "{{ proxmox_api_password | default(omit) }}"
+        # api_host: "{{ proxmox_api_host }}"
+        # api_user: "{{ proxmox_api_user }}"
+        # api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+        # api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+        # api_password: "{{ proxmox_api_password | default(omit) }}"
+        <<: *proxmox_auth
         node: "{{ proxmox_node }}"
         vmid: clone_result.vmid
         state: started
