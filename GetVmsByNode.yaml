@@ -47,24 +47,6 @@
       # Delegate to localhost because the proxmox modules run via the API
       delegate_to: localhost
 
-    - name: Display attached disk information
-      ansible.builtin.debug:
-        msg: "Disk details for VM {{ vm_id }}: {{ vm_info_result.proxmox_vms[0].config[0] | community.general.json_query(disk_query) }}"
-      vars:
-        # Use json_query to filter configuration keys that start with "scsi", "sata", "ide", or "virtio"
-        # The query uses a regex filter for keys and extracts key-value pairs
-        disk_query: "[?(@[0] | regex_search('^(scsi|sata|ide|virtio)[0-9]+$'))]"
-
-    - name: Extract OS disk description
-      set_fact:
-        os_disk_info: "{{ vm_info_result | json_query('proxmox_vms[0].config[0].ide0') 
-                          if vm_info_result.proxmox_vms[0].config[0].ide0 is defined 
-                          else vm_info_result | json_query('proxmox_vms[0].config[0].scsi0') }}"
-
-    - name: Show OS disk info
-      debug:
-        msg: "OS Disk Info: {{ os_disk_info }}"
-
     - name: Display the raw configuration for inspection (optional)
       ansible.builtin.debug:
         var: vm_info_result.proxmox_vms[0].config
