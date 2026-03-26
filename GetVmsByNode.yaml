@@ -37,7 +37,7 @@
 
     - name: Mostrar resultado con formato JSON
       debug:
-        msg: "{{ vm_list_info_result.json.data | to_nice_json }}"      
+        msg: "{{ vm_list_info_result.data | to_nice_json }}"      
 
     - name: List all existing virtual machines on node
       community.proxmox.proxmox_vm_info:
@@ -49,4 +49,4 @@
 
     - name: Mostrar resultado en formato YAML
       debug:
-        msg: "{{ vm_info_result.json.data | to_yaml }}"
+        msg: "{{ vm_info_result.data | to_yaml }}"
