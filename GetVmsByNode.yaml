@@ -36,7 +36,7 @@
       register: vm_list_info_result    
 
     - name: Get VM configuration from Proxmox
-      community.general.proxmox_kvm:        
+      community.proxmox.proxmox_kvm:        
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
         vmid: "{{ vm_id | default(omit) }}"
