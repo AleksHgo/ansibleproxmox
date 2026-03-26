@@ -57,7 +57,7 @@
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"
         vmid: "{{ vm_id }}"
-        sata1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
         state: present
 
     - name: Mostrar resultado final
