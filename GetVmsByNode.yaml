@@ -49,7 +49,7 @@
 
     - name: Display attached disk information
       ansible.builtin.debug:
-        msg: "Disk details for VM {{ vm_id }}: {{ vm_info_result.proxmox_vm_info[0].config | community.general.json_query(disk_query) }}"
+        msg: "Disk details for VM {{ vm_id }}: {{ vm_info_result.proxmox_vm[0].config | community.general.json_query(disk_query) }}"
       vars:
         # Use json_query to filter configuration keys that start with "scsi", "sata", "ide", or "virtio"
         # The query uses a regex filter for keys and extracts key-value pairs
