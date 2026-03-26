@@ -12,8 +12,8 @@ proxmox_node: "proxmox01"               # nombre del nodo destino (p.ej. pve1)
 vm_id: 210                        # ID único de VM en Proxmox
 vm_name: "vm-ansible-demo"
 vm_cores: 2
-vm_memory_mb: 4096
-vm_disk_gb: 40
+vm_memory_mb: "4096"
+vm_disk_gb: "40"
 vm_bridge: "vmbr0"
 vm_vlan: 3012                       # opcional, si no usas VLAN, quítalo
 vm_storage: "Storage-LVM-01"           # storage para el disco
