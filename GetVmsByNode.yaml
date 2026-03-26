@@ -32,3 +32,4 @@
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
         vmid: "{{ vm_id | default(omit) }}" 
+      register: vm_info_result  
