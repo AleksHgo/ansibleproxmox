@@ -50,3 +50,4 @@
     - name: Display the raw configuration for inspection (optional)
       ansible.builtin.debug:
         var: vm_info_result.proxmox_vms[0].config
+      when: vm_id is not none
