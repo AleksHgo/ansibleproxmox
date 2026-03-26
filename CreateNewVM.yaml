@@ -36,6 +36,7 @@
         sockets: 1
         memory: "{{vm_memory_mb | default(2048) }}"      
         scsihw: "virtio-scsi-single"
-        scsi: "{{vm_storage | default('local-lvm') }}:{{ vm_disk_gb | default('20') }}"
+        scsi: 
+          - scsi0: "{{ vm_storage | default('local-lvm') }}:{{ vm_disk_gb | default(20) }}"
         state: present    
       register: create_vm_result
