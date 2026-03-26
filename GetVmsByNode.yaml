@@ -31,5 +31,14 @@
       community.proxmox.proxmox_vm_info:
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
-        #vmid: "{{ vm_id | default(omit) }}" 
-      register: vm_info_result  
+        type: qemu
+      when: vmid is none
+      register: vm_list_info_result  
+
+    - name: List all existing virtual machines on node
+      community.proxmox.proxmox_vm_info:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        vmid: "{{ vm_id | default(omit) }}" 
+      when: vmid is not none 
+      register: vm_info_result        
