@@ -27,19 +27,19 @@
     - name: Create new VM with one network interface, three virto hard disk, 4 cores, and 2 vcpus
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
-        name: spynal
+        name: "{{ vm_name | default('ansible-vm') }}"
         node: "{{ proxmox_node }}" 
         net:
-          net0: "virtio,bridge={{ vm_bridge | default('vmbr0') }},firewall=1,tag={{ vm_vlan | default(omit) }}"
-        cores: {{ vm_cores | default(4) }}
+          net0: "virtio,bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
+        cores: "{{ vm_cores | default(4) }}"
         #vcpus: 2  
         sockets: 1
-        memory: {{vm_memory_mb | default(2048) }}      
+        memory: "{{vm_memory_mb | default(2048) }}"      
         scsihw: "virtio-scsi-single"
         disks:
-          - size: {{ vm_disk_size | default('20G') }}
-            type: scsi
+          - size: "{{ vm_disk_gb | default('20') }}G"
+            type: "scsi"
             storage: "{{vm_storage | default('local-lvm') }}"
-            storage_type: lvm
+            storage_type: "lvm"
         state: present    
       register: create_vm_result
