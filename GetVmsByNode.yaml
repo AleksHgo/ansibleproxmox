@@ -48,7 +48,7 @@
       set_fact:
         os_disk_info: "{{ vm_info_result | json_query('proxmox[0].ide0') 
                           if vm_info_result.proxmox[0].ide0 is defined 
-                          else vm_info | json_query('proxmox[0].scsi0') }}"  
+                          else vm_info_result | json_query('proxmox[0].scsi0') }}"  
       when: vm_info_result is not none
 
     - name: Show OS disk info
