@@ -33,11 +33,7 @@
         node: "{{ proxmox_node }}"  
         type: qemu
       when: vmid is none
-      register: vm_list_info_result  
-
-    - name: Mostrar resultado con formato JSON
-      debug:
-        msg: "{{ vm_list_info_result | to_yaml }}"      
+      register: vm_list_info_result    
 
     - name: List all existing virtual machines on node
       community.proxmox.proxmox_vm_info:
@@ -46,8 +42,3 @@
         vmid: "{{ vm_id | default(omit) }}" 
       when: vmid is not none 
       register: vm_info_result        
-
-    - name: Mostrar resultado en formato YAML
-      debug:
-        msg: "{{ vm_info_result.data | to_yaml }}"
-      when: vmid is not none   
