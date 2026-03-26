@@ -53,7 +53,7 @@
       vars:
         # Use json_query to filter configuration keys that start with "scsi", "sata", "ide", or "virtio"
         # The query uses a regex filter for keys and extracts key-value pairs
-        disk_query: "[?(@[0] | regex_search('^(scsi|sata|ide|virtio)[0-9]+$'))]"
+        disk_query: "[?(@[0] | regex_search('^(scsi|sata|ide|virtio)[0-9]+$')]"
 
     - name: Display the raw configuration for inspection (optional)
       ansible.builtin.debug:
