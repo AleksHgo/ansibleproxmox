@@ -12,7 +12,7 @@
 
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
-    vmid: null
+    vm_id: null
 
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
@@ -32,7 +32,7 @@
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
         type: qemu
-      when: vmid is none
+      when: vm_id is none
       register: vm_list_info_result    
 
     - name: List all existing virtual machines on node
