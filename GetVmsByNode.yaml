@@ -19,6 +19,7 @@
       api_user: "{{ proxmox_api_user }}"
       api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
       api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
 
   tasks:
     - name: Validar credenciales (token o password)
@@ -33,7 +34,7 @@
         node: "{{ proxmox_node }}"  
         type: qemu
       when: vm_id is none
-      register: vm_list_info_result    
+      register: vm_list_info_result.proxmox_vms[0]    
 
     - name: Get VM configuration from Proxmox
       community.proxmox.proxmox_vm_info:        
