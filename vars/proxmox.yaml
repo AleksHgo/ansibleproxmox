@@ -16,7 +16,7 @@ vm_memory_mb: "4096"
 vm_disk_gb: "40"
 vm_bridge: "vmbr0"
 vm_vlan: 3012                       # opcional, si no usas VLAN, quítalo
-vm_storage: "Storage-LVM-01"           # storage para el disco
+vm_storage: "local-zfs"           # storage para el disco
 vm_iso_storage: "Storage-LVM-01"           # storage donde vive la ISO
 vm_iso_file: "iso/ubuntu-22.04.4-live-server-amd64.iso" # ruta relativa al storage
 #vm_pool: "devops"                 # opcional: asignar a un pool
