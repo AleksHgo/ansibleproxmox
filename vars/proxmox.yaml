@@ -34,4 +34,4 @@ ci_dns_domain: "lab.local"
 
 # Plantilla (opcional, en vez de ISO). Si la usas, pon vm_from_template: true
 vm_from_template: true
-vm_template_name: "WS2022"  # nombre exacto de la plantilla si aplica
+vm_template_name: "WS2022"  # nombre exacto de la plantilla si aplica 
