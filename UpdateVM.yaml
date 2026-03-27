@@ -32,9 +32,9 @@
         node: "{{ proxmox_node }}" 
         net:
           net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
-        cores: "{{ vm_cores | default(4) }}"
+        cores: "{{ vm_cores | default('4') }}"
         sockets: 1
-        memory: "{{vm_memory_mb | default(2048) }}"      
+        memory: "{{vm_memory_mb | default('2048') }}"      
         update: true
       when: vm_name is not none  
       register: update_vm_result
