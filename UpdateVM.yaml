@@ -9,6 +9,7 @@
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
     vm_id: null
+    vm_name: null
 
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
@@ -27,7 +28,7 @@
     - name: Actualizar VM con una interfaz de red, cpu y ram
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
-        name: "{{ vm_name | default('ansible-vm') }}"
+        name: "{{ vm_name }}"
         node: "{{ proxmox_node }}" 
         net:
           net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
@@ -35,15 +36,18 @@
         sockets: 1
         memory: "{{vm_memory_mb | default(2048) }}"      
         update: true
+      when: vm_name is not none  
       register: update_vm_result
 
     - name: Get VM configuration from Proxmox
       community.proxmox.proxmox_vm_info:        
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
-        name: "{{ vm_name | default('ansible-vm') }}"
+        name: "{{ vm_name }}"
+        vmid: "{{ vm_id }}"
         type: qemu
         config: current 
+      when: vm_name is not none || vm_id is not none 
       register: vm_info_result   
       # Delegate to localhost because the proxmox modules run via the API
       delegate_to: localhost
