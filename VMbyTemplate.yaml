@@ -33,7 +33,7 @@
         <<: *proxmox_auth
         name: "Ansible_{{ vm_template_name }}_1"
         clone: "{{ vm_template_name }}"
-        node: "{{ proxmox_node }}"
+        node: "{{ proxmox_node | default('proxmox01') }}"
         storage: "{{ vm_storage }}"
         full: true
         timeout: 500
