@@ -26,7 +26,7 @@
       ansible.builtin.set_fact:
         my_timestamp: "{{ now(utc=true).strftime('%Y-%m-%dT%H%M%SZ') }}"
 
-    - name: Actualizar VM con una interfaz de red, cpu y ram
+    - name: crearcion de un snapshot de la VM
       community.proxmox.proxmox_snap:
         <<: *proxmox_auth
         node: "{{ proxmox_node }}" 
