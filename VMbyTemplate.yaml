@@ -14,6 +14,7 @@
       api_user: "{{ proxmox_api_user }}"
       api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
       api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
 
   tasks:
     - name: Validar credenciales (token o password)
@@ -30,9 +31,9 @@
         # api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
         # api_password: "{{ proxmox_api_password | default(omit) }}"
         <<: *proxmox_auth
-        node: "{{ proxmox_node }}"
         name: "Ansible_{{ vm_template_name }}_1"
         clone: "{{ vm_template_name }}"
+        node: "{{ proxmox_node }}"
         storage: "{{ vm_storage }}"
         full: true
         timeout: 500
@@ -42,7 +43,6 @@
 
     - name: Encender la VM
       community.proxmox.proxmox_kvm:
-
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"
         vmid: clone_result.vmid
