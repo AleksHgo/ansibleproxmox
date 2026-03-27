@@ -19,7 +19,7 @@ vm_vlan: 3012                       # opcional, si no usas VLAN, quítalo
 vm_storage: "local-zfs"           # storage para el disco
 vm_iso_storage: "Storage-LVM-01"           # storage donde vive la ISO
 vm_iso_file: "iso/ubuntu-22.04.4-live-server-amd64.iso" # ruta relativa al storage
-#vm_pool: "devops"                 # opcional: asignar a un pool
+vm_nic_model: null                 # opcional: asignar MAC address específico o modelo de NIC (p.ej. virtio, e1000)
 vm_description: "Creada por Ansible"
 
 # Para cloud-init:

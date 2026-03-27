@@ -30,12 +30,20 @@
         name: "{{ vm_name | default('ansible-vm') }}"
         node: "{{ proxmox_node }}" 
         net:
-          net0: "virtio,bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
+          net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
         cores: "{{ vm_cores | default(4) }}"
         sockets: 1
         memory: "{{vm_memory_mb | default(2048) }}"      
-        scsihw: "virtio-scsi-single"
-        scsi: 
-          scsi0: "{{ vm_storage | default('local-lvm') }}:{{ vm_disk_gb | default(20) }}"
         update: true
-      register: create_vm_result
+      register: update_vm_result
+
+    - name: Get VM configuration from Proxmox
+      community.proxmox.proxmox_vm_info:        
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        name: "{{ vm_name | default('ansible-vm') }}"
+        type: qemu
+        config: current 
+      register: vm_info_result   
+      # Delegate to localhost because the proxmox modules run via the API
+      delegate_to: localhost
