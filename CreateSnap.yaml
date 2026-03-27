@@ -7,7 +7,7 @@
 
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
-
+    vm_id: null
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
       api_user: "{{ proxmox_api_user }}"
@@ -33,4 +33,5 @@
         vmid: "{{ vm_id }}"
         state: present
         snapname: "{{snap_name | default('snapshot-') }} + {{ my_timestam }}"
+      when: vm_id is not none  
       register: new_snap_vm_result
