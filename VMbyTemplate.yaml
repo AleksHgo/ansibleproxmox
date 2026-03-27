@@ -31,7 +31,7 @@
         # api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
         # api_password: "{{ proxmox_api_password | default(omit) }}"
         <<: *proxmox_auth
-        name: "Ansible_{{ vm_template_name }}_1"
+        name: "Ansible-{{ vm_template_name }}-1"
         clone: "{{ vm_template_name }}"
         node: "{{ proxmox_node | default('proxmox01') }}"
         storage: "{{ vm_storage }}"
