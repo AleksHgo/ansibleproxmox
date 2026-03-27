@@ -43,7 +43,7 @@
       community.proxmox.proxmox_vm_info:        
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
-        name: "{{ vm_name | default('ansibleVM') }}"
+        name: "{{ vm_name | default(omit) }}"
         vmid: "{{ vm_id }}"
         type: qemu
         config: current 
