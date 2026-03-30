@@ -27,7 +27,7 @@
     - name: Start VM
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
-        name: {{ vm_name | default('ansible-vm') }}
+        name: "{{ vm_name | default('ansible-vm') }}"        
         #node: {{ proxmox_node | default('proxmox01') }}
-        state: {{ vm_state | default('started') }}:
+        state: "{{ vm_state | default('started') }}"
       register: state_vm_result
