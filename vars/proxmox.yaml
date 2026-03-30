@@ -21,6 +21,7 @@ vm_iso_storage: "Storage-LVM-01"           # storage donde vive la ISO
 vm_iso_file: "iso/ubuntu-22.04.4-live-server-amd64.iso" # ruta relativa al storage
 vm_nic_model: null                 # opcional: asignar MAC address específico o modelo de NIC (p.ej. virtio, e1000)
 vm_description: "Creada por Ansible"
+vm_state : "started"                   # "started", "stopped", o "present" (solo crear sin encender) restarted
 
 # Para cloud-init:
 use_cloud_init: true

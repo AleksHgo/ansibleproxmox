@@ -36,7 +36,7 @@
         node: "{{ proxmox_node | default('proxmox01') }}"
         storage: "{{ vm_storage }}"
         full: true
-        timeout: 500
+        timeout: 2000
         state: present
       when: vm_from_template | bool
       register: clone_result
