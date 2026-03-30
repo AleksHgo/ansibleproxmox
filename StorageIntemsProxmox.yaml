@@ -28,7 +28,7 @@
     - name: List existing storages
       community.proxmox.proxmox_storage_contents_info:
         <<: *proxmox_auth
-        storage: lvm2
+        storage: "{{ vm_storage | default('local-lvm') }}"
         content: all
         #vmid: 130
       register: storage_contents_results
