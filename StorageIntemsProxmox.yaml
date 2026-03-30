@@ -30,5 +30,5 @@
         <<: *proxmox_auth
         storage: "{{ vm_storage | default('local-lvm') }}"
         content: all
-        #vmid: 130
+        node: "{{ proxmox_node | default('proxmox01') }}"
       register: storage_contents_results
