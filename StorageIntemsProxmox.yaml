@@ -25,10 +25,15 @@
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
 
-    - name: List existing storages
+    - name: List objects existing storages
       community.proxmox.proxmox_storage_contents_info:
         <<: *proxmox_auth
         storage: "{{ vm_storage | default('local-lvm') }}"
         content: all
         node: "{{ proxmox_node | default('proxmox01') }}"
       register: storage_contents_results
+
+    - name: List existing storages
+      community.proxmox.proxmox_storage_info:
+        <<: *proxmox_auth
+      register: proxmox_storages  
