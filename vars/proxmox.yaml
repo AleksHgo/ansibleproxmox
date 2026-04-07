@@ -36,3 +36,8 @@ ci_dns_domain: "lab.local"
 # Plantilla (opcional, en vez de ISO). Si la usas, pon vm_from_template: true
 vm_from_template: true
 vm_template_name: "WS2022"  # nombre exacto de la plantilla si aplica 
+
+# Valores para coneccion a VSPOne (usado en HitachiSnapshot.yaml)
+vspone_api_host: "10.10.200.40"
+vspone_api_user: "ansible"
+vspone_api_password: "Ansible123_"

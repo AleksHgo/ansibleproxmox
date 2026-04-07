@@ -1,0 +1,28 @@
+---
+
+- name: Storage Snapshot in VSPOne
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  vars:
+
+    vsp_auth: &vspone_auth
+      address: "{{ vspone_api_host }}"
+      username: "{{ vspone_api_user }}"
+      password: "{{ vspone_api_password | default(omit) }}"
+
+  tasks:
+    - name: Create a snapshot
+      hitachivantara.vspone_block.vsp.hv_snapshot:
+        state: present
+        connection_info:
+          <<: *vspone_auth  
+        spec:
+          primary_volume_id: 123
+          pool_id: 1
+          snapshot_group_name: "snap_group"
+      register: snapshot_result
+
+   
