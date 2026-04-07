@@ -7,6 +7,8 @@
     - vars/proxmox.yaml
 
   vars:
+    vsp_primary_volume_id: "{{ vsp_primary_volume_id }}"
+
 
     vsp_auth: &vspone_auth
       address: "{{ vspone_api_host }}"
@@ -20,9 +22,9 @@
         connection_info:
           <<: *vspone_auth  
         spec:
-          primary_volume_id: {{ vsp_primary_volume_id }}  # ID del volumen primario a snapshotear 
-          pool_id: {{ vsp_pool_id }}  # ID del pool donde se crea el snapshot
-          snapshot_group_name: {{ vsp_snapshot_group_name | default("ansible_test_group") }}
+          primary_volume_id: "{{ vsp_primary_volume_id }}"
+          pool_id: "{{ vsp_pool_id }}"  # ID del pool donde se crea el snapshot
+          snapshot_group_name: "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
       register: snapshot_result
 
    
