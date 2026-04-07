@@ -20,9 +20,9 @@
         connection_info:
           <<: *vspone_auth  
         spec:
-          primary_volume_id: 123
-          pool_id: 1
-          snapshot_group_name: "snap_group"
+          primary_volume_id: 4
+          pool_id: 0
+          snapshot_group_name: "ansible_test_group"
       register: snapshot_result
 
    
