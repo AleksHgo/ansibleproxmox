@@ -22,11 +22,11 @@
         connection_info:
           <<: *vspone_auth  
         spec:
-          primary_volume_id: "{{ vsp_primary_volume_id }}"
-          pool_id: "{{ vsp_pool_id }}"  # ID del pool donde se crea el snapshot
+          primary_volume_id: "{{ vsp_primary_volume_id  || default(omit) }}"  
+          pool_id: "{{ vsp_pool_id || default(omit) }}"  # ID del pool donde se crea el snapshot
           snapshot_group_name: "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
 
-          secondary_volume_id: "{{ vsp_secundary_volume_id }}"  # Para vclone, el mismo volumen
+          secondary_volume_id: "{{ vsp_secundary_volume_id || default(omit) }}"  # Para vclone, el mismo volumen
           is_data_reduction_force_copy: true
           can_cascade: true # Required for restoring a snapshot from vclone
       register: snapshot_result
@@ -34,3 +34,49 @@
     - name: Debug the result variable
       ansible.builtin.debug:
         var: snapshot_result
+
+    - name: Present ldevs to hostgroup
+      hitachivantara.vspone_block.vsp.hv_hg:
+        connection_info:
+          <<: *vspone_auth
+        state: "present"
+        spec:
+          state: "present_ldev"
+          name: "PROXMOX01"
+          port: "CL2-A"
+          ldevs: [11, 21]
+        register: result01
+    
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: result01
+
+    - name: Present ldevs to hostgroup
+      hitachivantara.vspone_block.vsp.hv_hg:
+        connection_info: "{{ connection_info }}"
+        state: "present"
+        spec:
+          state: "present_ldev"
+          name: "PROXMOX02"
+          port: "CL5-A"
+          ldevs: [11, 21]
+      register: result02
+ 
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: result02        
+
+    - name: Present ldevs to hostgroup
+      hitachivantara.vspone_block.vsp.hv_hg:
+        connection_info: "{{ connection_info }}"
+        state: "present"
+        spec:
+          state: "present_ldev"
+          name: "PROXMOX02"
+          port: "CL6-A"
+          ldevs: [11, 21]
+      register: result03
+ 
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: result03
