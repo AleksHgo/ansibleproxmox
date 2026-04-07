@@ -53,7 +53,8 @@
 
     - name: Present ldevs to hostgroup
       hitachivantara.vspone_block.vsp.hv_hg:
-        connection_info: "{{ connection_info }}"
+        connection_info:
+          <<: *vspone_auth
         state: "present"
         spec:
           state: "present_ldev"
@@ -68,7 +69,8 @@
 
     - name: Present ldevs to hostgroup
       hitachivantara.vspone_block.vsp.hv_hg:
-        connection_info: "{{ connection_info }}"
+        connection_info: 
+          <<: *vspone_auth
         state: "present"
         spec:
           state: "present_ldev"
