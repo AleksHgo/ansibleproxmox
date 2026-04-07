@@ -7,7 +7,7 @@
     - vars/proxmox.yaml
 
   vars:
-    vsp_primary_volume_id: "{{ vsp_primary_volume_id }}"
+
 
 
     vsp_auth: &vspone_auth
