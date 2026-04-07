@@ -25,6 +25,12 @@
           primary_volume_id: "{{ vsp_primary_volume_id }}"
           pool_id: "{{ vsp_pool_id }}"  # ID del pool donde se crea el snapshot
           snapshot_group_name: "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
+
+          secondary_volume_id: "{{ vsp_secundary_volume_id }}"  # Para vclone, el mismo volumen
+          is_data_reduction_force_copy: true
+          can_cascade: true # Required for restoring a snapshot from vclone
       register: snapshot_result
 
-   
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: snapshot_result
