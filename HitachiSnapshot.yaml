@@ -45,7 +45,7 @@
           name: "PROXMOX01"
           port: "CL2-A"
           ldevs: [11, 21]
-        register: result01
+      register: result01
     
     - name: Debug the result variable
       ansible.builtin.debug:
