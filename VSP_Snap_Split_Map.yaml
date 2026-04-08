@@ -70,7 +70,7 @@
               "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
       register: Split_result
   
-    - name: Debug the result variable
+    - name: Debug the Split result 
       ansible.builtin.debug:
           var: Split_result        
 
