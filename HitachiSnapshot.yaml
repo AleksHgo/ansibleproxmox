@@ -8,8 +8,6 @@
 
   vars:
 
-
-
     vsp_auth: &vspone_auth
       address: "{{ vspone_api_host }}"
       username: "{{ vspone_api_user }}"
@@ -84,15 +82,53 @@
     #     var: result03
 
 
-    - name: Split the snapshot pairs using group name
-      hitachivantara.vspone_block.vsp.hv_snapshot_group:
-        connection_info: 
-          <<: *vspone_auth
-        state: "split"
-        spec:
-          snapshot_group_name: "ansible_test_group"
-      register: result
+    # - name: Split the snapshot pairs using group name
+    #   hitachivantara.vspone_block.vsp.hv_snapshot_group:
+    #     connection_info: 
+    #       <<: *vspone_auth
+    #     state: "split"
+    #     spec:
+    #       snapshot_group_name: "ansible_test_group"
+    #   register: result
  
-    - name: Debug the result variable
-      ansible.builtin.debug:
-        var: result        
+    # - name: Debug the result variable
+    #   ansible.builtin.debug:
+    #     var: result        
+
+
+- name: Tareas de Proxmox
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  vars:
+
+    proxmox_auth: &proxmox_auth
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
+
+  tasks:
+
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: Create new VM with one network interface, three virto hard disk, 4 cores, and 2 vcpus
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name | default('ansible-vm') }}"
+        node: "{{ proxmox_node }}" 
+        net:
+          net0: "virtio,bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
+        cores: "{{ vm_cores | default(4) }}" 
+        sockets: 1
+        memory: "{{vm_memory_mb | default(2048) }}"      
+        scsihw: "virtio-scsi-single"
+        state: present    
+      register: create_vm_result        

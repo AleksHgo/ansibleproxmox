@@ -41,7 +41,8 @@ vm_template_name: "WS2022"  # nombre exacto de la plantilla si aplica
 vspone_api_host: "10.10.200.40"
 vspone_api_user: "ansible"
 vspone_api_password: "Ansible123_"
-vsp_primary_volume_id: "4"
+
+vsp_primary_volume_id: [ 0 ]
 vsp_secundary_volume_id: 11
 vsp_pool_id: "0" 
 vsp_snapshot_group_name: "ansible_test_group"

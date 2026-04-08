@@ -1,0 +1,75 @@
+---
+
+- name: Storage Snapshot in VSPOne
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  vars:
+    vsp_secundary_volumes_ids: []
+    vsp_to_proxmox_nodes: []
+
+    vsp_auth: &vspone_auth
+      address: "{{ vspone_api_host }}"
+      username: "{{ vspone_api_user }}"
+      password: "{{ vspone_api_password | default(omit) }}"
+
+  tasks:
+    - name: Create a snapshot
+      hitachivantara.vspone_block.vsp.hv_snapshot:
+        state: present
+        connection_info:
+          <<: *vspone_auth  
+        spec:
+          primary_volume_id: "{{ vsp_primary_volumes_ids  || default(omit) }}"  
+          pool_id: "{{ vsp_pool_id || default(omit) }}"  # ID del pool donde se crea el snapshot
+          snapshot_group_name: "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
+
+          #secondary_volume_id: "{{ vsp_secundary_volume_id || default(omit) }}"  # Para vclone, el mismo volumen
+          is_data_reduction_force_copy: true
+          can_cascade: true # Required for restoring a snapshot from vclone
+      loop: "{{ vsp_primary_volumes_ids }}"  
+      register: snapshot_result
+  
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: snapshot_result
+
+    - name: Crear lista desde resultados Secundary_Volume
+      set_fact:
+        vsp_secundary_volumes_ids: "{{ snapshot_result.results | map(attribute='snapshot_data') | map('secondary_volume_id') | list }}"
+    - debug:
+        var: vsp_secundary_volumes_ids
+
+    - name: Present ldevs to hostgroup
+      hitachivantara.vspone_block.vsp.hv_hg:
+        connection_info:
+          <<: *vspone_auth
+        state: "present"
+        spec:
+          state: "present_ldev"
+          name:  "{{ item.node_name }}"
+          port: "{{ item.node_port }}"
+          ldevs: "{{ vsp_secundary_volumes_ids }}"
+      loop: "{{ vsp_to_proxmox_nodes }}"
+      register: ldevs_result
+    
+    - name: Debug the result variable
+      ansible.builtin.debug:
+        var: ldevs_result
+
+    - name: Split the snapshot pairs using group name
+      hitachivantara.vspone_block.vsp.hv_snapshot_group:
+          connection_info: 
+            <<: *vspone_auth
+          state: "split"
+          spec:
+            snapshot_group_name: 
+              "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
+      register: result
+  
+    - name: Debug the result variable
+      ansible.builtin.debug:
+          var: result        
+
