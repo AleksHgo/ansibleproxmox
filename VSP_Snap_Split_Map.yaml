@@ -9,6 +9,7 @@
   vars:
     vsp_secundary_volumes_ids: []
     vsp_to_proxmox_nodes: []
+    vsp_secundary_volume_id: null
 
     vsp_auth: &vspone_auth
       address: "{{ vspone_api_host }}"
@@ -16,7 +17,7 @@
       password: "{{ vspone_api_password | default(omit) }}"
 
   tasks:
-    - name: Create a snapshot
+    - name: Create a snapshot en VSPOne
       hitachivantara.vspone_block.vsp.hv_snapshot:
         state: present
         connection_info:
@@ -26,20 +27,20 @@
           pool_id: "{{ vsp_pool_id || default(omit) }}"  # ID del pool donde se crea el snapshot
           snapshot_group_name: "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
 
-          #secondary_volume_id: "{{ vsp_secundary_volume_id || default(omit) }}"  # Para vclone, el mismo volumen
+          secondary_volume_id: "{{ vsp_secundary_volume_id || default(omit) }}"
           is_data_reduction_force_copy: true
           can_cascade: true # Required for restoring a snapshot from vclone
       loop: "{{ vsp_primary_volumes_ids }}"  
       register: snapshot_result
   
-    - name: Debug the result variable
+    - name: Show snapshot Resut
       ansible.builtin.debug:
         var: snapshot_result
 
-    - name: Crear lista desde resultados Secundary_Volume
+    - name: Crear lista desde resultados "Secundary_Volume_Ids"
       set_fact:
         vsp_secundary_volumes_ids: "{{ snapshot_result.results | map(attribute='snapshot_data') | map('secondary_volume_id') | list }}"
-    - debug:
+      ansible.builtin.debug:
         var: vsp_secundary_volumes_ids
 
     - name: Present ldevs to hostgroup
@@ -51,7 +52,7 @@
           state: "present_ldev"
           name:  "{{ item.node_name }}"
           port: "{{ item.node_port }}"
-          ldevs: "{{ vsp_secundary_volumes_ids }}"
+          ldevs: "{{vsp_secundary_volume_id |  default(vsp_secundary_volumes_ids) }}"
       loop: "{{ vsp_to_proxmox_nodes }}"
       register: ldevs_result
     
@@ -67,9 +68,9 @@
           spec:
             snapshot_group_name: 
               "{{ vsp_snapshot_group_name | default('ansible_test_group') }}"
-      register: result
+      register: Split_result
   
     - name: Debug the result variable
       ansible.builtin.debug:
-          var: result        
+          var: Split_result        
 
