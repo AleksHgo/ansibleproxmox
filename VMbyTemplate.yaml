@@ -36,6 +36,7 @@
         node: "{{ proxmox_node | default('proxmox01') }}"
         storage: "{{ vm_storage }}"
         full: false
+        format: raw
         timeout: 2000
         state: present
       #when: vm_from_template | bool
