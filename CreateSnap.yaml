@@ -29,7 +29,7 @@
     - name: crearcion de un snapshot de la VM
       community.proxmox.proxmox_snap:
         <<: *proxmox_auth
-        node: "{{ proxmox_node }}" 
+        #node: "{{ proxmox_node }}" 
         vmid: "{{ vm_id }}"
         state: present
         snapname: "{{snap_name | default('snapshot-') }}"
