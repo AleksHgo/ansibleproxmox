@@ -36,6 +36,7 @@
         sockets: 1
         memory: "{{vm_memory_mb | default('2048') }}"      
         update: true
+        state: present 
       when: vm_name is not none  
       register: update_vm_result
 
