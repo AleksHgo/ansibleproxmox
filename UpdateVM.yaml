@@ -47,7 +47,7 @@
         vmid: "{{ vm_id }}"
         type: qemu
         config: current 
-      when: vm_name is not none || vm_id is not none 
+      #when: vm_name is not none || vm_id is not none 
       register: vm_info_result   
       # Delegate to localhost because the proxmox modules run via the API
       delegate_to: localhost
