@@ -31,7 +31,8 @@
         name: "{{ vm_name }}"
         node: "{{ proxmox_node }}" 
         net:
-          net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},macaddr={{ vm_nic_model }},tag={{ vm_vlan | default(omit) }}"     
+          net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}" 
+          macaddr: "{{ vm_nic_model }}"
         update: true
         state: present 
       #when: vm_name is not none  
