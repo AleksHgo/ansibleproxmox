@@ -35,7 +35,7 @@
   
     - name: Show snapshot Resut
       ansible.builtin.debug:
-        var: snapshot_result
+        var: snapshot_result.results
 
     - name: Crear lista desde resultados "Secundary_Volume_Ids"
       set_fact:
@@ -58,7 +58,7 @@
     
     - name: Debug the result variable
       ansible.builtin.debug:
-        var: ldevs_result
+        var: ldevs_result.results
 
     - name: Split the snapshot pairs using group name
       hitachivantara.vspone_block.vsp.hv_snapshot_group:
