@@ -22,9 +22,9 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: Set current time as a fact
-      ansible.builtin.set_fact:
-        my_timestamp: "{{ now().strftime('%Y-%m-%dT%H%M%SZ') }}"
+    # - name: Set current time as a fact
+    #   ansible.builtin.set_fact:
+    #     my_timestamp: "{{ now().strftime('%Y-%m-%dT%H%M%SZ') }}"
 
     - name: crearcion de un snapshot de la VM
       community.proxmox.proxmox_snap:
@@ -32,6 +32,6 @@
         node: "{{ proxmox_node }}" 
         vmid: "{{ vm_id }}"
         state: present
-        snapname: "{{snap_name | default('snapshot-') }} + {{ my_timestam }}"
+        snapname: "{{snap_name | default('snapshot-') }}"
       when: vm_id is not none  
       register: new_snap_vm_result
