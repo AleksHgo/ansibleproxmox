@@ -25,7 +25,19 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: Actualizar MAC VM con una interfaz de red
+    - name: Quita MAC VM con una interfaz de red
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name }}"
+        node: "{{ proxmox_node }}" 
+        #net:
+        #  net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"     
+        update: true
+        state: present 
+      #when: vm_name is not none  
+      register: update_vm_result
+
+    - name: Agrega MAC VM con una interfaz de red
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
         name: "{{ vm_name }}"
@@ -36,7 +48,6 @@
         state: present 
       #when: vm_name is not none  
       register: update_vm_result
-
 
     # - name: Actualizar VM con una interfaz de red, cpu y ram
     #   community.proxmox.proxmox_kvm:
