@@ -30,8 +30,8 @@
         <<: *proxmox_auth
         name: "{{ vm_name }}"
         node: "{{ proxmox_node }}" 
-        #net:
-        #  net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"     
+        net:
+          net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},macaddr={{ vm_nic_model }},tag={{ vm_vlan | default(omit) }}"     
         update: true
         state: present 
       #when: vm_name is not none  
