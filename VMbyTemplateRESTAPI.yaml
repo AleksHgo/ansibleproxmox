@@ -25,8 +25,13 @@
         headers: 
           Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
         validate_certs: false
-      register: tmp.json.data
+      register: tmp
       #delegate_to: "{{ proxmox_api_jumphost }}"
+
+
+    - name: Show VMs  Resut
+      ansible.builtin.debug:
+        var: tmp.json.data  
 
     # - name: extract the template vm id and source node
     #   set_fact:
