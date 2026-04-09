@@ -48,7 +48,7 @@
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
         vmid: "{{ vm_id}"
-        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}
+        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
         mac: "{{ vm_nic_model }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | default(omit) }}"
