@@ -54,7 +54,7 @@
         update: true
         state: present 
       register: update_vm_result
-      #delegate_to: localhost
+      delegate_to: localhost
 
     - name: Start VM
       community.proxmox.proxmox_kvm:
