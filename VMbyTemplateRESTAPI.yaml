@@ -83,7 +83,7 @@
         body:
           newid: "{{ vm_new_id }}"
           name: "Clone-{{ vm_template_name }}-{{ my_timestamp }}"
-          full: "{{ vm_full }}"
+          full: "{{ vm_full | bool }}"
           target: "{{ vm_template_node }}"
         return_content: true  
         validate_certs: false 
