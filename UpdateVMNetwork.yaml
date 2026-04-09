@@ -45,22 +45,23 @@
         name: "{{ vm_name }}"
         node: "{{ proxmox_node }}" 
         net:
-          net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
+          net0: 
+            model: virtio
+            macaddr: "{{ vm_nic_model }}"
+            bridge: "{{ vm_bridge | default('vmbr0')}}"
+            tag: "{{ vm_vlan | default(omit) }}"
         update: true
         state: present 
-      #when: vm_name is not none 
       register: update_vm_result
-      #delegate_to: localhost
+      delegate_to: localhost
 
     - name: Get VM configuration from Proxmox
       community.proxmox.proxmox_vm_info:        
         <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
         name: "{{ vm_name | default(omit) }}"
-        #vmid: "{{ vm_id }}"
         type: qemu
         config: current 
       when: vm_name is not none 
       register: vm_info_result.proxmox_vms   
-      # Delegate to localhost because the proxmox modules run via the API
       delegate_to: localhost
