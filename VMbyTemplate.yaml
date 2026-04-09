@@ -47,7 +47,7 @@
     - name: Encender la VM
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
-        node: "{{ proxmox_node }}"
+        name: "{{ vm_name | default('ansible-vm') }}"    
         state: started
       register: StartVM-result  
 
