@@ -27,46 +27,46 @@
       register: tmp
       #delegate_to: "{{ proxmox_api_jumphost }}"
 
-    - name: extract the template vm id and source node
-      set_fact:
-        vm_template_matching_names: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | list | count }}"
-        vm_template_id: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='id') | first | regex_replace('qemu/(\\d+)', '\\1') }}"
-        vm_template_node: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='node') | first }}"
+    # - name: extract the template vm id and source node
+    #   set_fact:
+    #     vm_template_matching_names: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | list | count }}"
+    #     vm_template_id: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='id') | first | regex_replace('qemu/(\\d+)', '\\1') }}"
+    #     vm_template_node: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='node') | first }}"
 
-    - name: check that the vm_template name is unambiguous
-      fail:
-        msg: "there is more than one vm called {{ vm_template }}"
-      when: vm_template_matching_names|int > 1
+    # - name: check that the vm_template name is unambiguous
+    #   fail:
+    #     msg: "there is more than one vm called {{ vm_template }}"
+    #   when: vm_template_matching_names|int > 1
 
-    - name: print template vm id
-      debug:
-        msg:
-          vm_template_matching_names: "{{ vm_template_matching_names }}"
-          vm_template_id: "{{ vm_template_id }}"
-          vm_template_node: "{{ vm_template_node }}"
+    # - name: print template vm id
+    #   debug:
+    #     msg:
+    #       vm_template_matching_names: "{{ vm_template_matching_names }}"
+    #       vm_template_id: "{{ vm_template_id }}"
+    #       vm_template_node: "{{ vm_template_node }}"
 
-    - name: get next free vm id
-      uri:
-        url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/cluster/nextid"
-        method: GET
-        headers: "{{ proxmox_api_cookie }}"
-      register: tmp
-      delegate_to: "{{ proxmox_api_jumphost }}"
+    # - name: get next free vm id
+    #   uri:
+    #     url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/cluster/nextid"
+    #     method: GET
+    #     headers: "{{ proxmox_api_cookie }}"
+    #   register: tmp
+    #   delegate_to: "{{ proxmox_api_jumphost }}"
 
-    - name: parse next free vm id
-      set_fact:
-        vm_new_id: "{{ tmp.json.data | int }}"
+    # - name: parse next free vm id
+    #   set_fact:
+    #     vm_new_id: "{{ tmp.json.data | int }}"
 
-    - name: create machines
-      uri:
-        url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/nodes/{{ vm_template_node }}/qemu/{{ vm_template_id }}/clone"
-        method: POST
-        headers: "{{ proxmox_api_cookie }}"
-        body_format: form-urlencoded
-        body:
-          newid: "{{ vm_new_id }}"
-          name: "{{ inventory_hostname }}"
-          full: 0
-          target: "{{ vm_node }}"
-      register: tmp
-      delegate_to: "{{ proxmox_api_jumphost }}"
+    # - name: create machines
+    #   uri:
+    #     url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/nodes/{{ vm_template_node }}/qemu/{{ vm_template_id }}/clone"
+    #     method: POST
+    #     headers: "{{ proxmox_api_cookie }}"
+    #     body_format: form-urlencoded
+    #     body:
+    #       newid: "{{ vm_new_id }}"
+    #       name: "{{ inventory_hostname }}"
+    #       full: 0
+    #       target: "{{ vm_node }}"
+    #   register: tmp
+    #   delegate_to: "{{ proxmox_api_jumphost }}"
