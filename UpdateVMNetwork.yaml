@@ -43,6 +43,7 @@
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
         name: "{{ vm_name }}"
+        vmid: "{{ vm_id }}"
         node: "{{ proxmox_node }}" 
         net:
           net0: 
@@ -62,7 +63,7 @@
         state: "{{ vm_state | default('started') }}"
       register: state_vm_result
 
-      
+
     # - name: Get VM configuration from Proxmox
     #   community.proxmox.proxmox_vm_info:        
     #     <<: *proxmox_auth

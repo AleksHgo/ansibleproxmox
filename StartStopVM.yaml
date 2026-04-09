@@ -24,11 +24,12 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: Start VM
+    - name: Start/Stop VM
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
         name: "{{ vm_name | default('ansible-vm') }}"        
         state: "{{ vm_state | default('started') }}"
+        timeout: 600 
       register: state_vm_result
 
     - name: Show state Resut
