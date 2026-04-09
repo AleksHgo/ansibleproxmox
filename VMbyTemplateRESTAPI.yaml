@@ -22,7 +22,8 @@
       uri:
         url: "{{ api_host_url }}/cluster/resources?type=vm"
         method: GET
-        headers: Authorization: "PVEAPIToken={{ api_token_id }}={{ api_token_secret }}"
+        headers: 
+          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{  proxmox_api_token_secret }}"
         validate_certs: false
       register: tmp
       #delegate_to: "{{ proxmox_api_jumphost }}"
