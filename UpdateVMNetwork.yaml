@@ -42,7 +42,7 @@
     - name: crear la nueva nic
       set_fact:    
         next_nic: "net{{ net_count }}"
-      when: add_nic
+      when: net_count is defined and add_nic
 
     - name: Mostrar numero de NICs
       debug:
