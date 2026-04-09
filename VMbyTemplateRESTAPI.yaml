@@ -86,4 +86,8 @@
       register: clone-rresult
       delegate_to: localhost
 
+    - name: Show clone result
+      ansible.builtin.debug:
+        var: clone-rresult.json.data       
+
     
