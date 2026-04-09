@@ -28,7 +28,7 @@
 
     - name: Obtener informacion de la VM
       community.proxmox.proxmox_vm_info:
-        <<:  *proxmox_auth
+        <<: *proxmox_auth
         node: "{{ proxmox_node }}"  
         name: "{{ vm_name | default(omit) }}"
         config: current 
@@ -37,6 +37,7 @@
     - name: Contar interfaces de red actuales
       set_fact:
         net_count: "{{ vm_info.proxmox_vms[0].network | default({}) | length }}"
+        next_nic: net{{ net_count }}
 
     - name: Mostrar numero de NICs
       debug:
@@ -45,9 +46,9 @@
 
     - name: Agregar nueva interfaz de red (net{{ net_count }})
       community.proxmox.proxmox_nic:
-        <<:  *proxmox_auth
+        <<: *proxmox_auth
         vmid: "{{ vm_id}"
-        interface: "{{ (add_nic == true) | ternary( 'net'{{ net_count}} , interface_num ) }}
+        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}
         mac: "{{ vm_nic_model }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | default(omit) }}"
