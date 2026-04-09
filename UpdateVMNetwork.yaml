@@ -56,7 +56,7 @@
         interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
-        tag: "{{ vm_vlan | default(omit) }}"
+        tag: "{{ vm_vlan | default(0) | int }}"
         model: "virtio"
         state: "present"
       when: net_count is defined
