@@ -1,0 +1,77 @@
+
+- name: get information about all vms in the cluster
+  uri:
+    url: "{{ api_host_url }}/cluster/resources?type=vm"
+    method: GET
+    headers: 
+      Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+    validate_certs: false
+  register: tmp
+
+
+
+- name: Show VMs  Resut
+  ansible.builtin.debug:
+    var: tmp.json.data  
+
+- name: extract the template vm id and source node
+  set_fact:
+    vm_template_matching_names: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template_name) | list | count }}"
+    vm_template_id: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template_name) | map(attribute='id') | first | regex_replace('qemu/(\\d+)', '\\1') }}"
+    vm_template_node: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template_name) | map(attribute='node') | first }}"
+
+- name: check that the vm_template_name name is unambiguous
+  fail:
+    msg: "there is more than one vm called {{ vm_template_name }}"
+  when: vm_template_matching_names|int > 1
+
+- name: print template vm id
+  debug:
+    msg:
+      vm_template_matching_names: "{{ vm_template_matching_names }}"
+      vm_template_id: "{{ vm_template_id }}"
+      vm_template_node: "{{ vm_template_node }}"
+
+- name: get next free vm id
+  uri:
+    url: "{{ api_host_url }}/cluster/nextid"
+    method: GET
+    headers: 
+      Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"    
+    validate_certs: false      
+  register: tmp_nextID
+
+
+- name: Show nexst ID free
+  ansible.builtin.debug:
+    var: tmp_nextID.json.data 
+
+- name: parse next free vm id
+  set_fact:
+    vm_new_id: "{{ tmp_nextID.json.data | int }}"
+
+- name: Set current time as a fact
+  ansible.builtin.set_fact:
+    my_timestamp: "{{ now().strftime('%Y-%m-%dT%H%M%SZ') }}"        
+
+- name: create machines
+  uri:
+    url: "{{ api_host_url }}/nodes/{{ vm_template_node }}/qemu/{{ vm_template_id }}/clone"
+    method: POST
+    headers:
+      Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"            
+    body_format: form-urlencoded
+    body:
+      newid: "{{ vm_new_id }}"
+      name: "Clone-{{ vm_template_name }}-{{ my_timestamp }}"
+      full: "{{ vm_full | int }}"
+      target: "{{ vm_template_node }}"
+    return_content: true  
+    validate_certs: false 
+  register: clone_result
+  delegate_to: localhost
+
+- name: Show clone result
+  ansible.builtin.debug:
+    var: clone_result.json.data       
+
