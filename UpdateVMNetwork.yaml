@@ -37,7 +37,7 @@
     - name: Contar interfaces de red actuales
       set_fact:    
         net_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list | length }}"
-        next_nic: "net{{ net_count }}"
+        #next_nic: "net{{ net_count }}"
       when: vm_info.proxmox_vms | length > 0
 
 
@@ -50,7 +50,7 @@
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
         vmid: "{{ vm_id}"
-        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
+        interface: "{{ (add_nic == true) | ternary( 'net'net_count , interface_num ) }}"
         mac: "{{ vm_nic_model }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | default(omit) }}"
