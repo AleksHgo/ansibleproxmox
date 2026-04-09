@@ -32,10 +32,14 @@
         net:
           net0: "virtio,bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
         cores: "{{ vm_cores | default(4) }}" 
-        sockets: 1
+        sockets: "{{ vm_sockets | default(1) }}"
         memory: "{{vm_memory_mb | default(2048) }}"      
         scsihw: "virtio-scsi-single"
         scsi: 
           scsi0: "{{ vm_storage | default('local-lvm') }}:{{ vm_disk_gb | default(20) }}"
         state: present    
       register: create_vm_result
+
+    - name: Show New VM Resut
+      ansible.builtin.debug:
+        var: create_vm_result      

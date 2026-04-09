@@ -28,6 +28,9 @@
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
         name: "{{ vm_name | default('ansible-vm') }}"        
-        #node: {{ proxmox_node | default('proxmox01') }}
         state: "{{ vm_state | default('started') }}"
       register: state_vm_result
+
+    - name: Show state Resut
+      ansible.builtin.debug:
+        var: state_vm_result      
