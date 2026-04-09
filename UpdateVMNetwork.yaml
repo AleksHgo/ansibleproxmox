@@ -55,6 +55,14 @@
       register: update_vm_result
       #delegate_to: localhost
 
+    - name: Start VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name | default('ansible-vm') }}"        
+        state: "{{ vm_state | default('started') }}"
+      register: state_vm_result
+
+      
     # - name: Get VM configuration from Proxmox
     #   community.proxmox.proxmox_vm_info:        
     #     <<: *proxmox_auth
