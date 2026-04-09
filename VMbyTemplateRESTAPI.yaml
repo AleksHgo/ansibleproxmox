@@ -1,0 +1,72 @@
+---
+# create_proxmox_vm.yml
+- name: Crear VM en Proxmox
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+
+    proxmox_auth: &proxmox_auth
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
+
+  tasks:
+
+    - name: get information about all vms in the cluster
+      uri:
+        url: "{{ api_host_url }}/cluster/resources?type=vm"
+        method: GET
+        headers: Authorization: "PVEAPIToken={{ api_token_id }}={{ api_token_secret }}"
+        validate_certs: false
+      register: tmp
+      #delegate_to: "{{ proxmox_api_jumphost }}"
+
+    - name: extract the template vm id and source node
+      set_fact:
+        vm_template_matching_names: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | list | count }}"
+        vm_template_id: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='id') | first | regex_replace('qemu/(\\d+)', '\\1') }}"
+        vm_template_node: "{{ tmp.json.data | selectattr('name', 'equalto', vm_template) | map(attribute='node') | first }}"
+
+    - name: check that the vm_template name is unambiguous
+      fail:
+        msg: "there is more than one vm called {{ vm_template }}"
+      when: vm_template_matching_names|int > 1
+
+    - name: print template vm id
+      debug:
+        msg:
+          vm_template_matching_names: "{{ vm_template_matching_names }}"
+          vm_template_id: "{{ vm_template_id }}"
+          vm_template_node: "{{ vm_template_node }}"
+
+    - name: get next free vm id
+      uri:
+        url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/cluster/nextid"
+        method: GET
+        headers: "{{ proxmox_api_cookie }}"
+      register: tmp
+      delegate_to: "{{ proxmox_api_jumphost }}"
+
+    - name: parse next free vm id
+      set_fact:
+        vm_new_id: "{{ tmp.json.data | int }}"
+
+    - name: create machines
+      uri:
+        url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/nodes/{{ vm_template_node }}/qemu/{{ vm_template_id }}/clone"
+        method: POST
+        headers: "{{ proxmox_api_cookie }}"
+        body_format: form-urlencoded
+        body:
+          newid: "{{ vm_new_id }}"
+          name: "{{ inventory_hostname }}"
+          full: 0
+          target: "{{ vm_node }}"
+      register: tmp
+      delegate_to: "{{ proxmox_api_jumphost }}"
