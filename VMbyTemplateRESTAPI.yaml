@@ -26,7 +26,7 @@
           Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
         validate_certs: false
       register: tmp
-      #delegate_to: "{{ proxmox_api_jumphost }}"
+
 
 
     - name: Show VMs  Resut
@@ -59,7 +59,7 @@
           Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"    
         validate_certs: false      
       register: tmp_nextID
-      #delegate_to: "{{ proxmox_api_jumphost }}"
+
 
     - name: Show nexst ID free
       ansible.builtin.debug:
