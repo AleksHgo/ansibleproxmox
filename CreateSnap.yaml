@@ -32,7 +32,7 @@
         #node: "{{ proxmox_node }}" 
         vmid: "{{ vm_id }}"
         state: present
-        snapname: "{{snap_name | default('snapshot-') }} + '_' + {{ my_timestamp }}"
+        snapname: "{{snap_name | default('snapshot-') }}_{{ my_timestamp }}"
       when: vm_id is not none  
       register: new_snap_vm_result
 
