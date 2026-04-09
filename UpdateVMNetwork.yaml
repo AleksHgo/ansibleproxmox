@@ -63,5 +63,9 @@
         type: qemu
         config: current 
       when: vm_name is not none 
-      register: vm_info_result.proxmox_vms   
+      register: vm_info_result   
       delegate_to: localhost
+
+    - name: Show clone result
+      ansible.builtin.debug:
+        var: vm_info_result         
