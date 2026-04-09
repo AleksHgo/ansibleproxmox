@@ -50,7 +50,7 @@
             model: virtio
             macaddr: "{{ vm_nic_model }}"
             bridge: "{{ vm_bridge | default('vmbr0')}}"
-            tag: "{{ vm_vlan | default(omit) }}"
+            #tag: "{{ vm_vlan | default(omit) }}"
         update: true
         state: present 
       register: update_vm_result
