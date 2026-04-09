@@ -56,7 +56,8 @@
         url: "{{ api_host_url }}/cluster/nextid"
         method: GET
         headers: 
-          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"        
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"    
+        validate_certs: false      
       register: tmp_nextID
       #delegate_to: "{{ proxmox_api_jumphost }}"
 
