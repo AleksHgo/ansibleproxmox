@@ -49,7 +49,7 @@
     - name: Agregar nueva interfaz de red (net{{ net_count }})
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
-        vmid: "{{ vm_id}"
+        vmid: "{{ vm_id }}"
         interface: "{{ (add_nic == true) | ternary( 'net'net_count , interface_num ) }}"
         mac: "{{ vm_nic_model }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
