@@ -25,7 +25,7 @@
         headers: 
           Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
         validate_certs: false
-      register: tmp
+      register: tmp.json.data
       #delegate_to: "{{ proxmox_api_jumphost }}"
 
     # - name: extract the template vm id and source node
