@@ -61,6 +61,6 @@
         type: qemu
         config: current 
       when: vm_name is not none 
-      register: vm_info_result   
+      register: vm_info_result.proxmox_vms   
       # Delegate to localhost because the proxmox modules run via the API
       delegate_to: localhost
