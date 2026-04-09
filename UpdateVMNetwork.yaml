@@ -1,0 +1,67 @@
+---
+# UpdateVM.yml
+- name: Actualizar configuracion de una VM en Proxmox
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+    vm_id: null
+    vm_name: null
+
+    proxmox_auth: &proxmox_auth
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    # - name: Quita MAC VM con una interfaz de red
+    #   community.proxmox.proxmox_kvm:
+    #     <<: *proxmox_auth
+    #     name: "{{ vm_name }}"
+    #     node: "{{ proxmox_node }}" 
+    #     net:
+    #       net0: ""
+    #       net1: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}" 
+    #     update: true
+    #     state: present 
+    #   #when: vm_name is not none  
+    #   register: update_vm_result
+
+
+
+    - name: Actualizar una interfaz de red de VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name }}"
+        node: "{{ proxmox_node }}" 
+        #net:
+        #  net0: "virtio={{ vm_nic_model | default('virtio') }},bridge={{ vm_bridge | default('vmbr0')}},tag={{ vm_vlan | default(omit) }}"
+        update: true
+        state: present 
+      when: vm_name is not none  
+      register: update_vm_result
+      #delegate_to: localhost
+
+    - name: Get VM configuration from Proxmox
+      community.proxmox.proxmox_vm_info:        
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        name: "{{ vm_name | default(omit) }}"
+        #vmid: "{{ vm_id }}"
+        type: qemu
+        config: current 
+      when: vm_name is not none 
+      register: vm_info_result   
+      # Delegate to localhost because the proxmox modules run via the API
+      delegate_to: localhost
