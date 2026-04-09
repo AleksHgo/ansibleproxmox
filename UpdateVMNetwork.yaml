@@ -51,7 +51,7 @@
         <<: *proxmox_auth
         vmid: "{{ vm_id }}"
         interface: "{{ (add_nic == true) | ternary( 'net'net_count , interface_num ) }}"
-        mac: "{{ vm_nic_model }}"
+        mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | default(omit) }}"
         model: "virtio"
