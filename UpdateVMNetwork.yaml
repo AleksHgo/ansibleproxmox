@@ -53,19 +53,19 @@
         update: true
         state: present 
       register: update_vm_result
-      delegate_to: localhost
+      #delegate_to: localhost
 
-    - name: Get VM configuration from Proxmox
-      community.proxmox.proxmox_vm_info:        
-        <<: *proxmox_auth
-        node: "{{ proxmox_node }}"  
-        name: "{{ vm_name | default(omit) }}"
-        type: qemu
-        config: current 
-      when: vm_name is not none 
-      register: vm_info_result   
-      delegate_to: localhost
+    # - name: Get VM configuration from Proxmox
+    #   community.proxmox.proxmox_vm_info:        
+    #     <<: *proxmox_auth
+    #     node: "{{ proxmox_node }}"  
+    #     name: "{{ vm_name | default(omit) }}"
+    #     type: qemu
+    #     config: current 
+    #   when: vm_name is not none 
+    #   register: vm_info_result   
+    #   delegate_to: localhost
 
-    - name: Show clone result
-      ansible.builtin.debug:
-        var: vm_info_result         
+    # - name: Show clone result
+    #   ansible.builtin.debug:
+    #     var: vm_info_result         
