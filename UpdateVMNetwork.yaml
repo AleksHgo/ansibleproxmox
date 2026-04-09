@@ -56,7 +56,7 @@
         tag: "{{ vm_vlan | default(omit) }}"
         model: "virtio"
         state: "present"
-      when: net_count is defined and add_nic 
+      when: net_count is defined
       register: updateNIC_result
 
 
