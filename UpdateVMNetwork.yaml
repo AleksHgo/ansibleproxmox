@@ -36,8 +36,12 @@
 
     - name: Contar interfaces de red actuales
       set_fact:
-        net_count: "{{ vm_info.proxmox_vms[0].network | default({}) | length }}"
+        #net_count: "{{ vm_info.proxmox_vms[0].network | default({}) | length }}"
         next_nic: net{{ net_count }}
+        net_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list | length }}"
+        next_nic: net{{ net_count }}
+      when: vm_info.proxmox_vms | length > 0
+
 
     - name: Mostrar numero de NICs
       debug:
