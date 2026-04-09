@@ -51,17 +51,22 @@
     #       vm_template_id: "{{ vm_template_id }}"
     #       vm_template_node: "{{ vm_template_node }}"
 
-    # - name: get next free vm id
-    #   uri:
-    #     url: "{{ proxmox_api_scheme }}://{{ proxmox_api_host }}/api2/json/cluster/nextid"
-    #     method: GET
-    #     headers: "{{ proxmox_api_cookie }}"
-    #   register: tmp
-    #   delegate_to: "{{ proxmox_api_jumphost }}"
+    - name: get next free vm id
+      uri:
+        url: "{{ api_host_url }}/cluster/nextid"
+        method: GET
+        headers: 
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"        
+      register: tmp_nextID
+      #delegate_to: "{{ proxmox_api_jumphost }}"
 
-    # - name: parse next free vm id
-    #   set_fact:
-    #     vm_new_id: "{{ tmp.json.data | int }}"
+    - name: Show nest ID free
+      ansible.builtin.debug:
+        var: tmp_nextID.json.data 
+
+    - name: parse next free vm id
+      set_fact:
+        vm_new_id: "{{ tmp.json.data | int }}"
 
     # - name: create machines
     #   uri:
