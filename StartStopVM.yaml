@@ -29,7 +29,7 @@
         <<: *proxmox_auth
         name: "{{ vm_name | default('ansible-vm') }}"        
         state: "{{ vm_state | default('started') }}"
-        timeout: 30 
+        timeout: 60 
       register: state_vm_result
 
     - name: Show state Resut
