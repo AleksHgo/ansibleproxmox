@@ -26,9 +26,19 @@
  
  
   tasks:
-    #####################################################################
-    # 1 Task Name : Create HUR pair in new copy group
-    ######################################################################
+
+    - name: Register Remote Storage
+      hitachivantara.vspone_block.vsp.hv_remote_storage_registration:
+        connection_info:
+          <<: *vspone_auth 
+        secondary_connection_info:
+          <<: *vspone_sec_auth
+        state: present
+        spec:
+          is_mutual_discovery: true
+          rest_server_ip: localhost
+
+
     - name: Create HUR pair in new copy group
       hitachivantara.vspone_block.vsp.hv_hur:
         connection_info: 
