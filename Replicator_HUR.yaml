@@ -14,12 +14,12 @@
 
   vars:
     # Common connection info for all tasks
-    connection_info:
+    connection_info: &vspone_auth
       address: "{{ storage_address }}"
       username: "{{ vault_storage_username }}"
       password: "{{ vault_storage_secret }}"
       
-    secondary_connection_info:
+    secondary_connection_info: &vspone_sec_auth
       address: "{{ secondary_storage_address }}"
       username: "{{ vault_secondary_storage_username }}"
       password: "{{ vault_secondary_storage_secret }}"
@@ -31,8 +31,10 @@
     ######################################################################
     - name: Create HUR pair in new copy group
       hitachivantara.vspone_block.vsp.hv_hur:
-        connection_info: "{{ connection_info }}"
-        secondary_connection_info: "{{ secondary_connection_info }}"
+        connection_info: 
+          <<: *vspone_auth    #"{{ connection_info }}"
+        secondary_connection_info: 
+          <<: *vspone_sec_auth  #"{{ secondary_connection_info }}"
         state: "present"
         spec:
           copy_group_name: "HUR_Test"
