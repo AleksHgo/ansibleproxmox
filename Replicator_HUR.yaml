@@ -31,46 +31,30 @@
     - name: Create HUR pair test
 
       hitachivantara.vspone_block.vsp.hv_hur:
-
         connection_info: 
           <<: *vspone_auth 
-
         secondary_connection_info: 
           <<: *vspone_sec_auth 
         state: "present"
 
         spec:
-
           copy_group_name: "HUR_Test"
-
           copy_pair_name: "HUR_Test_vol1"
-
           primary_volume_id: 4
-
           secondary_pool_id: 0
-
           primary_volume_journal_id: 0
-
           secondary_volume_journal_id: 0
-
           local_device_group_name: "hur_local_device_group_name_1"
-
           remote_device_group_name: "hur_remote_device_group_name_1"
-
           consistency_group_id: 1
           secondary_hostgroups:
             - name: "PROXMOX01"
               port_id: "CL5-A"
               lun_id: 4
-
           mirror_unit_id: 1
-
           path_group_id: 1
-
       register: result
-
     - debug:
-
         var: result
  
 
