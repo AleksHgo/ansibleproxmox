@@ -58,6 +58,10 @@
           remote_device_group_name: "hur_remote_device_group_name_1"
 
           consistency_group_id: 1
+          secondary_hostgroups:
+            - name: "PROXMOX01"
+              port_id: "CL5-A"
+              lun_id: 4
 
           mirror_unit_id: 1
 
