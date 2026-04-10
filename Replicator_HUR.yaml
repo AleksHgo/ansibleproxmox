@@ -15,28 +15,25 @@
   vars:
     # Common connection info for all tasks
     connection_info: &vspone_auth
-      address: "{{ storage_address }}"
-      username: "{{ vault_storage_username }}"
-      password: "{{ vault_storage_secret }}"
+      address: "10.10.200.40" # "{{ storage_address }}"
+      username: "ansible" #"{{ vault_storage_username }}"
+      password: "Ansible123_" # "{{ vault_storage_secret }}"
       
     secondary_connection_info: &vspone_sec_auth
-      address: "{{ secondary_storage_address }}"
-      username: "{{ vault_secondary_storage_username }}"
-      password: "{{ vault_secondary_storage_secret }}"
- 
- 
+      address: "10.10.200.43" # "{{ secondary_storage_address }}"
+      username: "ansible" # "{{ vault_secondary_storage_username }}"
+      password: "Ansible123_" # "{{ vault_secondary_storage_secret }}"
+
   tasks:
 
  
     - name: Create HUR pair test
-
       hitachivantara.vspone_block.vsp.hv_hur:
         connection_info: 
           <<: *vspone_auth 
         secondary_connection_info: 
           <<: *vspone_sec_auth 
         state: "present"
-
         spec:
           copy_group_name: "HUR_Test"
           copy_pair_name: "HUR_Test_vol1"
@@ -54,21 +51,8 @@
           mirror_unit_id: 1
           path_group_id: 1
       register: result
-    - debug:
-        var: result
+
  
-
-
-    - name: Register Remote Storage
-      hitachivantara.vspone_block.vsp.hv_remote_storage_registration:
-        connection_info:
-          <<: *vspone_auth 
-        secondary_connection_info:
-          <<: *vspone_sec_auth
-        state: present
-        spec:
-          is_mutual_discovery: true
-          rest_server_ip: localhost
 
 
     - name: Create HUR pair in new copy group
