@@ -39,8 +39,8 @@
           copy_pair_name: "HUR_Test_vol1"
           primary_volume_id: 4
           secondary_pool_id: 0
-          primary_volume_journal_id: 0
-          secondary_volume_journal_id: 0
+          primary_volume_journal_id: 37
+          secondary_volume_journal_id: 37
           local_device_group_name: "hur_local_device_group_name_1"
           remote_device_group_name: "hur_remote_device_group_name_1"
           consistency_group_id: 1
@@ -67,8 +67,8 @@
           copy_pair_name: "HUR_Test_vol1"
           primary_volume_id: 4
           secondary_pool_id: 0
-          primary_volume_journal_id: 0
-          secondary_volume_journal_id: 0
+          primary_volume_journal_id: 37
+          secondary_volume_journal_id: 37
           local_device_group_name: "hur_local_device_group_name_1"
           remote_device_group_name: "hur_remote_device_group_name_1"
           consistency_group_id: 1
