@@ -26,6 +26,23 @@
 
   tasks:
 
+    # #####################################################################################
+    # Task Name : Register Remote Storage
+    # #####################################################################################
+    - name: Register Remote Storage
+      hitachivantara.vspone_block.vsp.hv_remote_storage_registration:
+        connection_info: 
+          <<: *vspone_auth 
+        secondary_connection_info: 
+          <<: *vspone_sec_auth 
+        state: present
+        spec:
+          is_mutual_discovery: true
+      register: result
+
+    - name: Debug result
+      ansible.builtin.debug:
+        var: result
  
     - name: Create HUR pair test
       hitachivantara.vspone_block.vsp.hv_hur:
