@@ -24,12 +24,18 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: Obtiene informacion de la VM
-      community.proxmox.proxmox_vm_info:
+    - name: Get VM configuration from Proxmox
+      community.proxmox.proxmox_vm_info:        
         <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        name: "{{ vm_name | default(omit) }}"
         vmid: "{{ vm_id }}"
-        node: "{{ proxmox_node | default('proxmox03') }}"
-      register: vm_info_result
+        type: qemu
+        config: current 
+      register: vm_info_result   
+      # Delegate to localhost because the proxmox modules run via the API
+      delegate_to: localhost
+
     
     - name: Show VM status
       ansible.builtin.debug:
