@@ -11,11 +11,11 @@
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
     proxmox_auth: &proxmox_auth
-    api_host: "{{ proxmox_api_host }}"
-    api_user: "{{ proxmox_api_user }}"
-    api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
-    api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
-    validate_certs: false
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
 
   tasks:
     - name: Validar credenciales (token o password)
