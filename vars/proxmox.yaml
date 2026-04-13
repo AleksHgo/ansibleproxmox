@@ -8,7 +8,7 @@ proxmox_api_token_secret: "4332aafa-3336-4e46-bf78-b443d5ad4f42" # secreto del t
 # Si prefieres password en lugar de token, usa:
 # proxmox_api_password: "tu_password"
 
-proxmox_node: "proxmox01"               # nombre del nodo destino (p.ej. pve1)
+proxmox_node: "proxmox03"               # nombre del nodo destino (p.ej. pve1)
 vm_id: 210                        # ID único de VM en Proxmox
 vm_name: "vm-ansible-demo"
 vm_cores: 2
