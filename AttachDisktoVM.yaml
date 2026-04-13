@@ -39,7 +39,7 @@
     
     - name: Show VM status
       ansible.builtin.debug:
-        msg: "Current VM status is {{ vm_info_result.proxmox_vms[0].status }}"
+        msg: "Current VM status is {{ vm_info_result.proxmox_vms[0].config }}"
       when: vm_info_result.proxmox_vms | length > 0
 
     # - name: apagar la VM
@@ -52,13 +52,24 @@
     #   when: vm_info_result.proxmox_vms | length > 0 
     #   register: stop_task_result 
 
-    # - name: Agregar nuevo disco a la VM
-    #   community.proxmox.proxmox_kvm:
-    #     <<: *proxmox_auth
-    #     node: "{{ proxmox_node | default('proxmox03') }}"
-    #     vmid: "{{ vm_id }}"
-    #     scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
-    #     state: present
+    - name: Agregar nuevo disco a la VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node | default('proxmox03') }}"
+        vmid: "{{ vm_id }}"
+        scsihw: "virtio-scsi-single"
+            - name: "disk1"
+              scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi2: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi3: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi4: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi5: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi6: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi7: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        #scsi8: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        state: present
 
     # - name: Mostrar resultado final
     #   debug:
