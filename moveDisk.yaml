@@ -26,9 +26,9 @@
         disk: "{{ scsi_id }}"
         target_storage: LUN04
         format: raw
-        state: moved
-      register: moveResult  
+        state: moved 
       loop: scsi_id
+      register: moveResult 
 
     - name: Show snapshot Resut
       ansible.builtin.debug:
