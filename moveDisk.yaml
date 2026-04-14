@@ -1,6 +1,6 @@
 ---
 # create_proxmox_vm.yml
-- name: Agregar disco a Proxmox VM
+- name: mover disco de Proxmox VM
   hosts: localhost
   gather_facts: false
   vars_files:
