@@ -57,7 +57,7 @@
         disk: "scsi{{ disk_count }}"
         backup: true
         cache: none
-        storage: {{ vm_storage }}
+        storage: "{{ vm_storage }}"
         size: "{{ vm_disk_gb }}G"
         state: present
       when: disk_count is defined
@@ -69,4 +69,3 @@
       debug:
         msg: disk_task_result
 
-        
