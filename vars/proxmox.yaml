@@ -3,7 +3,7 @@
 proxmox_api_host: "10.10.201.2"   # o IP del nodo/cluster
 proxmox_api_user: "root@pam"                  # o usuario@realm
 proxmox_api_token_id: "ansible"               # nombre del token (si usas API token)
-proxmox_api_token_secret: "93aa302b-aff8-4e54-9f59-0561ab254dcd" # "4332aafa-3336-4e46-bf78-b443d5ad4f42" # secreto del token (si usas API token)
+proxmox_api_token_secret: "8b36c67b-bb4c-4598-a638-d9809eddd9b7" # "4332aafa-3336-4e46-bf78-b443d5ad4f42" # secreto del token (si usas API token)
 
 # vars/proxmox.yml
 proxmoxc_api_host: "10.10.201.2"   # o IP del nodo/cluster
