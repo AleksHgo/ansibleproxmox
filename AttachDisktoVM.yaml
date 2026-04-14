@@ -47,7 +47,7 @@
     - name: Show VM status
       ansible.builtin.debug:
         msg: "Current VM status is {{ vm_info_result.proxmox_vms[0].config }}"
-      when: vm_info_result.proxmox_vms | length > 0
+      when: vm_info.proxmox_vms | length > 0
 
 
     - name: Create new disk in VM (do not rewrite in case it exists already)
