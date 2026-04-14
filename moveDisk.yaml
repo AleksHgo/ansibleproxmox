@@ -23,7 +23,7 @@
       community.proxmox.proxmox_disk:
         <<: *proxmox_auth
         vmid: 105
-        disk: "{{ scsi_id }}"
+        disk: "{{ item }}"
         target_storage: LUN04
         format: raw
         state: moved 
