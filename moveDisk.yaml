@@ -11,10 +11,10 @@
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
     proxmox_auth: &proxmox_auth
-      api_host: "{{ proxmoxc_api_host }}"
-      api_user: "{{ proxmoxc_api_user }}"
-      api_token_id: "{{ proxmoxc_api_token_id | default(omit) }}"
-      api_token_secret: "{{ proxmoxc_api_token_secret | default(omit) }}"
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
       validate_certs: false
 
   tasks:
@@ -23,8 +23,13 @@
       community.proxmox.proxmox_disk:
         <<: *proxmox_auth
         vmid: 105
-        disk: scsi7
-        target_storage: local
-        format: qcow2
+        disk: "{{ scsi_id }}"
+        target_storage: LUN04
+        format: raw
         state: moved
       register: moveResult  
+      loop: scsi_id
+
+    - name: Show snapshot Resut
+      ansible.builtin.debug:
+        var: moveResult
