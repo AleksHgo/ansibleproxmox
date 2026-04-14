@@ -30,49 +30,43 @@
         node: "{{ proxmox_node }}"  
         name: "{{ vm_name | default(omit) }}"
         vmid: "{{ vm_id }}"
-        type: qemu
         config: current 
-      register: vm_info_result   
-      # Delegate to localhost because the proxmox modules run via the API
-      delegate_to: localhost
+      register: vm_info  
 
+    - name: Contar discos actuales
+      set_fact:    
+        disk_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^scsi\\d+$') | list | length }}"
+      when: vm_info.proxmox_vms | length > 0
     
+
+    - name: Mostrar numero de discos
+      debug:
+        msg: "La VM {{ vm_id }} tiene {{ disk_count }} discos."
+
+
     - name: Show VM status
       ansible.builtin.debug:
         msg: "Current VM status is {{ vm_info_result.proxmox_vms[0].config }}"
       when: vm_info_result.proxmox_vms | length > 0
 
-    # - name: apagar la VM
-    #   community.proxmox.proxmox_kvm:
-    #     <<: *proxmox_auth
-    #     node: "{{ proxmox_node | default('proxmox03') }}"
-    #     vmid: "{{ vm_id }}"
-    #     state: stopped
-    #     force: false
-    #   when: vm_info_result.proxmox_vms | length > 0 
-    #   register: stop_task_result 
 
-    - name: Agregar nuevo disco a la VM
-      community.proxmox.proxmox_kvm:
+    - name: Create new disk in VM (do not rewrite in case it exists already)
+      community.proxmox.proxmox_disk:
         <<: *proxmox_auth
-        node: "{{ proxmox_node | default('proxmox03') }}"
-        vmid: "{{ vm_id }}"
-        scsihw: "virtio-scsi-single"
-            - name: "disk1"
-              scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi2: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi3: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi4: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi5: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi6: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi7: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        #scsi8: "{{ vm_storage }}:{{ vm_disk_gb }}"
-        scsi1: "{{ vm_storage }}:{{ vm_disk_gb }}"
+        name: "vm-{{ vm_id }}-disk{{ disk_count }}"
+        disk: "scsi{{ disk_count }}"
+        backup: true
+        cache: none
+        storage: {{ vm_storage }}
+        size: "{{ vm_disk_gb }}G"
         state: present
+      when: disk_count is defined
+      register: disk_task_result  
 
-    # - name: Mostrar resultado final
-    #   debug:
-    #     msg:
-    #       - "VM {{ vm_name }} (ID {{ vm_id }}) creada y encendida en {{ proxmox_node }}"
-    #       - "IP detectada: {{ vm_ip | default('no disponible') }}"
+
+
+    - name: Mostrar resultado final
+      debug:
+        msg: disk_task_result
+
+        
