@@ -8,6 +8,8 @@
 
 
   vars:
+
+
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
     proxmox_auth: &proxmox_auth
@@ -27,7 +29,7 @@
         target_storage: LUN04
         format: raw
         state: moved 
-      loop: scsi_id
+      loop: "{{ scsi_id }}"
       register: moveResult 
 
     - name: Show snapshot Resut
