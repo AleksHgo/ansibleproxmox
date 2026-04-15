@@ -38,6 +38,7 @@
     - name: Contar interfaces de red actuales
       set_fact:    
         net_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list | length }}"
+        net_list: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list }}"
       when: vm_info.proxmox_vms | length > 0
 
     - name: Mostrar numero de NICs
@@ -49,6 +50,22 @@
         next_nic: "net{{ net_count }}"
       when: net_count is defined and add_nic
 
+    - name: obtener nic a actualizar
+      set_fact:    
+        nic_selected: "net{{ net_list  | dict2items | selectattr('key', 'match', '^'interface_num'+$')}}"
+      when: net_count is defined
+
+    - name: obtener nic valores actuales
+      set_fact:    
+        nic_mac: "{{ nic_selected.split(',') | select('search', 'virtio=') | list | first | regex_replace('virtio=', '') }}"
+        nic_tag: "{{ nic_selected.split(',') | select('search', 'tag=') | list | first | regex_replace('tag=', '') }}"
+      when: net_count is defined    
+
+    - name: Mostrar NIC seleccionada
+      debug:
+        msg: "La NIC {{ interface_num }} tiene {{ nic_mac }}, {{ nic_tag }} "
+
+
     - name: Agregar nueva interfaz de red (net{{ net_count }})
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
@@ -56,7 +73,7 @@
         interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
-        tag: "{{ vm_vlan | int if vm_vlan is defined else omit }}"
+        tag: "{{ vm_vlan | int if vm_vlan is defined else nic_tag }}"
         link_down: "{{ is_down | default('false') | bool }}"
         model: "virtio"
         state: "present"
