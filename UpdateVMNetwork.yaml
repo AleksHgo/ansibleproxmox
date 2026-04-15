@@ -62,11 +62,6 @@
 
       when: net_list | length > 0         
 
-    # - name: obtener nic a actualizar
-    #   set_fact:    
-    #     nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', interface_num)}}"
-    #   when: net_list | length > 0
-
     - name: obtener nic valores actuales
       set_fact:    
         nic_mac: "{{parsed_interfaces | selectattr('key', 'equalto', interface_num) | map(attribute='parsed.virtio') | first }}"
@@ -80,7 +75,7 @@
       when: net_list | length > 0  
 
 
-    - name: Agregar nueva interfaz  dered (net{{ net_count }})
+    - name: Agregar nueva interfaz  de red 
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
         vmid: "{{ vm_id }}"

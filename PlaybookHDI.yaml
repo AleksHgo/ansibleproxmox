@@ -13,6 +13,7 @@
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
     vm_id: null
+    vm_id_clone: null
 
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
@@ -56,7 +57,36 @@
           - "Estado: {{ vm_info_result.proxmox_vms[0].status }}"
       when: vm_info_result.proxmox_vms | length > 0    
 
+    - name: Remove VM 
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name | default('vm-test')}}"
+        node: "{{ proxmox_node | default('proxmox02') }}"
+        state: absent        
+      when: remove_vm  
+      register: remove_result
 
+    - name: Display Remove Result
+      ansible.builtin.debug:
+        var: remove_result    
+      when: remove_vm   
 
+    - name: Clonacion de VM
+      ansible.builtin.include_tasks: cloneVMs.yaml
+      loop: "{{ range(1, n_vms + 1) | list }}"        
+      register: cl_result
 
+    - name: Agregar nueva interfaz  de red 
+      community.proxmox.proxmox_nic:
+        <<: *proxmox_auth
+        vmid: "{{ vm_id }}"
+        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
+        mac: "{{ vm_nic_model | default(omit) }}"
+        bridge: "{{ vm_bridge | default('vmbr0')}}"
+        tag: "{{ vm_vlan | default( nic_tag , true) | int }}"
+        link_down: "{{ is_down | default('false') | bool }}"
+        model: "virtio"
+        state: "present"
+      when: net_count is defined
+      register: updateNIC_result
 
