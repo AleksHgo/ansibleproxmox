@@ -57,7 +57,7 @@
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | int if vm_vlan is defined else omit }}"
-        link_down: {{ is_down | default('false') | bool }}
+        link_down: "{{ is_down | default('false') | bool }}"
         model: "virtio"
         state: "present"
       when: net_count is defined
