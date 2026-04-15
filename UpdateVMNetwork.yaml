@@ -56,18 +56,19 @@
 
     - name: obtener nic a actualizar
       set_fact:    
-        nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', '^'interface_num'+$')}}"
-      when: net_count is defined
+        nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', interface_num)}}"
+      when: net_list | length > 0
 
     - name: obtener nic valores actuales
       set_fact:    
         nic_mac: "{{ nic_selected.split(',') | select('search', 'virtio=') | list | first | regex_replace('virtio=', '') }}"
         nic_tag: "{{ nic_selected.split(',') | select('search', 'tag=') | list | first | regex_replace('tag=', '') }}"
-      when: net_count is defined    
+      when: net_list | length > 0   
 
     - name: Mostrar NIC seleccionada
       debug:
         msg: "La NIC {{ interface_num }} tiene {{ nic_mac }}, {{ nic_tag }} "
+      when: net_list | length > 0  
 
 
     - name: Agregar nueva interfaz de red (net{{ net_count }})
