@@ -13,7 +13,7 @@
   vars:
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
     vm_id: null
-    vm_id_clone: null
+    vm_new_id: null
 
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
@@ -73,20 +73,30 @@
 
     - name: Clonacion de VM
       ansible.builtin.include_tasks: cloneVMs.yaml
-      loop: "{{ range(1, n_vms + 1) | list }}"        
+      loop: "{{ range(1, n_vms + 1) | list }}" 
+      when: clone_vm       
       register: cl_result
 
     - name: Agregar nueva interfaz  de red 
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
-        vmid: "{{ vm_id }}"
-        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
+        vmid: "{{ vm_new_id }}"
+        interface: "{{ interface_num  }}"
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | default( nic_tag , true) | int }}"
         link_down: "{{ is_down | default('false') | bool }}"
         model: "virtio"
         state: "present"
-      when: net_count is defined
+      when: vm_new_id is defined
       register: updateNIC_result
+
+    - name: Start/Stop VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ 'Clone-' vm_template_name '-' my_timestamp | default('ansible-vm') }}"        
+        state: "{{ vm_state | default('started') }}"
+        timeout: 60 
+      when: vm_new_id is defined  
+      register: state_vm_result      
 
