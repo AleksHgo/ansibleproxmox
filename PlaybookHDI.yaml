@@ -1,0 +1,62 @@
+---
+# create_proxmox_vm.yml
+- name: playbook general de HDI
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+  collections:
+    - community.general
+    - community.proxmox
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+    vm_id: null
+
+    proxmox_auth: &proxmox_auth
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: List all existing virtual machines on node
+      community.proxmox.proxmox_vm_info:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        vmid: "{{ vm_id }}"
+        config: current 
+      register: vm_info_result
+      ignore_errors: yes
+
+    - name: Display the raw configuration for inspection (optional)
+      ansible.builtin.debug:
+        var: vm_list_info_result.proxmox_vms
+      when: vm_info_result is ok
+
+    - name: Fallar si la VM no existe
+      fail:
+        msg: "❌ La VM con ID {{ vm_id }} NO existe en Proxmox"
+      when: vm_info_result is failed
+
+
+    - name: Mostrar información básica de la VM
+      debug:
+        msg:
+          - "✅ La VM {{ vm_id }} existe"
+          - "Nombre: {{ vm_info_result.proxmox_vms[0].name | default('N/A') }}"
+          - "Estado: {{ vm_info_result.proxmox_vms[0].status }}"
+      when: vm_info_result.proxmox_vms | length > 0    
+
+      
+
+
+
