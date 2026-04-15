@@ -50,6 +50,10 @@
         next_nic: "net{{ net_count }}"
       when: net_count is defined and add_nic
 
+    - name: Mostrar NICs
+      debug:
+        msg: "{{ net_list }}"
+
     - name: obtener nic a actualizar
       set_fact:    
         nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', '^'interface_num'+$')}}"
