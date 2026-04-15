@@ -10,6 +10,7 @@
     add_nic: false
     interface_num: net0
     is_down: false
+    parsed_interfaces: []
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
 
@@ -56,7 +57,9 @@
 
     - name: parcer nics
       set_fact:      
-        parsed_interfaces: "{{ net_list | map( 'combine', {'parsed': dict( item.value.split(',') | map('split', '=') ) }) | list }}"
+        parsed_interfaces: "{{ parsed_interfaces + [ { 'key': item.key, 'parsed': dict(item.value.split(',') | map('split', '=')) } ] }}"
+      loop: "{{ net_list }}"
+
       when: net_list | length > 0         
 
     # - name: obtener nic a actualizar
