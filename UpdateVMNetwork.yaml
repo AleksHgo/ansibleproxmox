@@ -63,7 +63,7 @@
       set_fact:    
         nic_mac: "{{ net_list | selectattr('key', 'equalto', interface_num) | map(attribute='value') | first | regex_search('([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}') }}"
 
-        nic_tag: "{{ net_list  | selectattr('key', 'equalto', interface_num) | map(attribute='value') | first | regex_search('tag=([^,]+)', '\\1')"
+        nic_tag: "{{ net_list | selectattr('key', 'equalto', interface_num) | map(attribute='value') | first | regex_search('tag=([^,]+)', '\\1') }}"
       when: net_list | length > 0   
 
     - name: Mostrar NIC seleccionada
