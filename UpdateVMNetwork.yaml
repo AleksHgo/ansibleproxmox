@@ -87,7 +87,7 @@
         interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
-        tag: "{{ vm_vlan | default( nic_tag ) | int }}"
+        tag: "{{ vm_vlan | default( nic_tag , true) | int }}"
         link_down: "{{ is_down | default('false') | bool }}"
         model: "virtio"
         state: "present"
