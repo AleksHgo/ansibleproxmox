@@ -40,7 +40,7 @@
     - name: Display the raw configuration for inspection (optional)
       ansible.builtin.debug:
         var: vm_list_info_result.proxmox_vms
-      when: vm_info_result is ok
+      when: vm_info_result.proxmox_vms | length > 0   
 
     - name: Fallar si la VM no existe
       fail:
@@ -56,7 +56,7 @@
           - "Estado: {{ vm_info_result.proxmox_vms[0].status }}"
       when: vm_info_result.proxmox_vms | length > 0    
 
-      
+
 
 
 
