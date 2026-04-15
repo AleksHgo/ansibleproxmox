@@ -24,7 +24,7 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: Create new VM with one network interface, three virto hard disk, 4 cores, and 2 vcpus
+    - name: Create new VM 
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
         name: "{{ vm_name | default('ansible-vm') }}"
@@ -42,4 +42,15 @@
 
     - name: Show New VM Resut
       ansible.builtin.debug:
-        var: create_vm_result      
+        var: create_vm_result    
+
+    - name: List all existing virtual machines on node
+      community.proxmox.proxmox_vm_info:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        type: qemu
+      register: vm_list_info_result
+
+    - name: Display the raw configuration for inspection (optional)
+      ansible.builtin.debug:
+        var: vm_list_info_result.proxmox_vms      

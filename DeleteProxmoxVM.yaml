@@ -1,5 +1,5 @@
 # create_proxmox_vm.yml
-- name: mover disco de Proxmox VM
+- name: borrado de VM de Proxmox
   hosts: localhost
   gather_facts: false
   vars_files:
