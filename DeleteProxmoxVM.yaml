@@ -47,4 +47,16 @@
       ansible.builtin.debug:
         var: remove_result    
 
+    - name: List all existing virtual machines on node
+      community.proxmox.proxmox_vm_info:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        type: qemu
+      register: vm_list_info_result
+
+    - name: Display the raw configuration for inspection (optional)
+      ansible.builtin.debug:
+        var: vm_list_info_result.proxmox_vms
+
+
 
