@@ -1,0 +1,49 @@
+# create_proxmox_vm.yml
+- name: mover disco de Proxmox VM
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/proxmox.yaml
+
+
+  vars:
+    api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
+
+    proxmox_auth: &proxmox_auth
+      api_host: "{{ proxmox_api_host }}"
+      api_user: "{{ proxmox_api_user }}"
+      api_token_id: "{{ proxmox_api_token_id | default(omit) }}"
+      api_token_secret: "{{ proxmox_api_token_secret | default(omit) }}"
+      validate_certs: false
+
+  tasks:
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: List all existing virtual machines on node
+      community.proxmox.proxmox_vm_info:
+        <<: *proxmox_auth
+        node: "{{ proxmox_node }}"  
+        type: qemu
+      register: vm_list_info_result
+
+    - name: Display the raw configuration for inspection (optional)
+      ansible.builtin.debug:
+        var: vm_list_info_result.proxmox_vms
+
+    - name: Remove VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name | default('vm-test')}}"
+        node: "{{ proxmox_node | default('proxmox02') }}"
+        state: absent        
+      register: remove_result
+
+    - name: Display Remove Result
+      ansible.builtin.debug:
+        var: remove_result    
+
+
