@@ -29,6 +29,9 @@
         target_storage: LUN04
         format: raw
         state: moved 
+
+        async: 120
+        poll: 10
       loop: "{{ scsi_id }}"
       register: moveResult 
 
