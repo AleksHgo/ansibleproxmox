@@ -52,7 +52,7 @@
 
     - name: obtener nic a actualizar
       set_fact:    
-        nic_selected: "net{{ net_list  | dict2items | selectattr('key', 'match', '^'interface_num'+$')}}"
+        nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', '^'interface_num'+$')}}"
       when: net_count is defined
 
     - name: obtener nic valores actuales
