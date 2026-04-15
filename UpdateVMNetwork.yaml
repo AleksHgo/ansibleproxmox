@@ -71,8 +71,7 @@
       set_fact:    
         nic_mac: "{{parsed_interfaces | selectattr('key', 'equalto', interface_num) | map(attribute='parsed.virtio') | first }}"
 
-        nic_tag: "{{parsed_interfaces | selectattr('key', 'equalto', interface_num) | map(attribute='parsed.tag') | first }}"
-
+        nic_tag: "{{ parsed_interfaces | selectattr('key','equalto',interface_num) | map(attribute='parsed.tag') | first |  default(0) }}"
       when: net_list | length > 0   
 
     - name: Mostrar NIC seleccionada
