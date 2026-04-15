@@ -54,23 +54,9 @@
       debug:
         msg: "{{ net_list }}"
 
-    - name: crear la nueva nic
+    - name: parcer nics
       set_fact:      
-        parsed_interfaces: >-
-              {{
-                net_list
-                | map(
-                    'combine',
-                    {
-                      'parsed':
-                        dict(
-                          item.value.split(',')
-                          | map('split', '=')
-                        )
-                    }
-                  )
-                | list
-              }}
+        parsed_interfaces: "{{ net_list | map( 'combine', {'parsed': dict( item.value.split(',') | map('split', '=') ) }) | list }}"
       when: net_list | length > 0         
 
     # - name: obtener nic a actualizar
