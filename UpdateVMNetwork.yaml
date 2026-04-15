@@ -54,15 +54,16 @@
       debug:
         msg: "{{ net_list }}"
 
-    - name: obtener nic a actualizar
-      set_fact:    
-        nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', interface_num)}}"
-      when: net_list | length > 0
+    # - name: obtener nic a actualizar
+    #   set_fact:    
+    #     nic_selected: "{{ net_list  | dict2items | selectattr('key', 'match', interface_num)}}"
+    #   when: net_list | length > 0
 
     - name: obtener nic valores actuales
       set_fact:    
-        nic_mac: "{{ nic_selected.split(',') | select('search', 'virtio=') | list | first | regex_replace('virtio=', '') }}"
-        nic_tag: "{{ nic_selected.split(',') | select('search', 'tag=') | list | first | regex_replace('tag=', '') }}"
+        nic_mac: "{{ net_list | selectattr('key', 'equalto', interface_num ) | map(attribute='virtio') | first }}"
+
+        nic_tag: "{{ net_list | selectattr('key', 'equalto', interface_num ) | map(attribute='tag') | first | int }}"
       when: net_list | length > 0   
 
     - name: Mostrar NIC seleccionada
