@@ -1,3 +1,4 @@
+---
 # create_proxmox_vm.yml
 - name: borrado de VM de Proxmox
   hosts: localhost
