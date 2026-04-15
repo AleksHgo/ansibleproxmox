@@ -9,7 +9,6 @@
   vars:
     add_nic: false
     interface_num: net0
-    is_down: false
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
 
 
@@ -35,29 +34,28 @@
         config: current 
       register: vm_info
 
-    - name: Contar interfaces de red actuales
-      set_fact:    
-        net_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list | length }}"
-      when: vm_info.proxmox_vms | length > 0
+    # - name: Contar interfaces de red actuales
+    #   set_fact:    
+    #     net_count: "{{ vm_info.proxmox_vms[0].config | dict2items | selectattr('key', 'match', '^net\\d+$') | list | length }}"
+    #   when: vm_info.proxmox_vms | length > 0
 
-    - name: Mostrar numero de NICs
-      debug:
-        msg: "La VM {{ vm_id }} tiene {{ net_count }} interfaces."
+    # - name: Mostrar numero de NICs
+    #   debug:
+    #     msg: "La VM {{ vm_id }} tiene {{ net_count }} interfaces."
 
-    - name: crear la nueva nic
-      set_fact:    
-        next_nic: "net{{ net_count }}"
-      when: net_count is defined and add_nic
+    # - name: crear la nueva nic
+    #   set_fact:    
+    #     next_nic: "net{{ net_count }}"
+    #   when: net_count is defined and add_nic
 
     - name: Agregar nueva interfaz de red (net{{ net_count }})
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
         vmid: "{{ vm_id }}"
-        interface: "{{ (add_nic == true) | ternary( next_nic , interface_num ) }}"
+        interface: "{{ interface_num  }}"
         mac: "{{ vm_nic_model | default(omit) }}"
         bridge: "{{ vm_bridge | default('vmbr0')}}"
         tag: "{{ vm_vlan | int if vm_vlan is defined else omit }}"
-        link_down: {{ is_down | default('false') | bool }}
         model: "virtio"
         state: "present"
       when: net_count is defined
