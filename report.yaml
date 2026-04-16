@@ -38,14 +38,14 @@
     #     #task: "UPID:proxmox01:002F0FB0:009B170F:69E00DBB:qmstart:109:root@pam:"
     #   register: result_tatsks
 
-- name: get information about all vms in the cluster
-  uri:
-    url: "{{ api_host_url }}/cluster/tasks"
-    method: GET
-    headers: 
-      Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
-    validate_certs: false
-  register: tmp
+    - name: get information about all vms in the cluster
+      uri:
+        url: "{{ api_host_url }}/cluster/tasks"
+        method: GET
+        headers: 
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+        validate_certs: false
+      register: tmp
 
 
 
