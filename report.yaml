@@ -33,7 +33,8 @@
     - name: List finished tasks on node01
       community.proxmox.proxmox_tasks_info:
         <<: *proxmox_auth
-        node: "{{proxmox_node | default('proxmox01')}}"
+        node: "{{ proxmox_node | default('proxmox01') }}"
+        source: active
       register: result_tatsks
 
 
