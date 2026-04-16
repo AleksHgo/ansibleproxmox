@@ -35,6 +35,7 @@
         <<: *proxmox_auth
         node: "{{ proxmox_node | default('proxmox01') }}"
         source: all
+        task: "UPID:proxmox01:002F0FB0:009B170F:69E00DBB:qmstart:109:root@pam:"
       register: result_tatsks
 
 
