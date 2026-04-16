@@ -84,7 +84,7 @@
 
     - name: Clonacion de VM
       ansible.builtin.include_tasks: cloneVMs.yaml
-      timeout: 90 
+      timeout: 130 
       loop: "{{ range(1, n_vms + 1) | list }}" 
       when: clone_vm       
       register: cl_result
