@@ -34,7 +34,7 @@
       community.proxmox.proxmox_tasks_info:
         <<: *proxmox_auth
         node: "{{ proxmox_node | default('proxmox01') }}"
-        source: active
+        source: all
       register: result_tatsks
 
 
