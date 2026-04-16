@@ -23,6 +23,21 @@
       validate_certs: false
 
   tasks:
-    - name: Clonacion de VM
-      ansible.builtin.include_tasks: mailtask.yaml  
-      register: ml_result
+
+    - name: Validar credenciales (token o password)
+      assert:
+        that:
+          - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
+        fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
+
+    - name: List finished tasks on node01
+      community.proxmox.proxmox_tasks_info:
+        <<: *proxmox_auth
+        node: "{{proxmox_node | default('proxmox01')}}"
+      register: result_tatsks
+
+
+
+    # - name: Envia correo
+    #   ansible.builtin.include_tasks: mailtask.yaml  
+    #   register: ml_result
