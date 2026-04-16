@@ -69,3 +69,29 @@ secondary_storage_serial: "840240"  #<your_secondary_storage_serial_number>""
 secondary_storage_address: "10.10.200.43" # Example: storage1.company.com or sds1.company.com or 10.10.10.10
 vault_secondary_storage_username: "ansible"
 vault_secondary_storage_secret: "Ansible123_"
+
+
+
+smtp_host: "smtp.office365.com"
+smtp_port: 587
+smtp_user: "arodriguez@icsicorp.com.mx"
+smtp_password: "msjwgmkyvwhyqynk"
+mail_from: "no-reply@icsicorp.com.mx"
+mail_to:
+  - "sguzman@icsicorp.com.mx"
+mail_subject: "Reporte automático de Ansible"
+
+mail_body_html: |
+  <html>
+    <body style="font-family: Arial, sans-serif;">
+      <h2 style="color:#0078D4;">Reporte de ejecución Ansible</h2>
+      <p>Hola,</p>
+      <p>Este correo fue enviado automáticamente desde <b>Ansible</b>.</p>
+      <ul>
+        <li>Servidor: localhost</li>
+        <li>Fecha: {{ lookup('pipe', 'date') }}</li>
+        <li>Estado: ✅ OK</li>
+      </ul>
+      <p>Saludos,<br><b>Equipo TI</b></p>
+    </body>
+  </html>
