@@ -30,13 +30,22 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    - name: List finished tasks on node01
-      community.proxmox.proxmox_tasks_info:
-        <<: *proxmox_auth
-        node: "{{ proxmox_node | default('proxmox01') }}"
-        source: all
-        #task: "UPID:proxmox01:002F0FB0:009B170F:69E00DBB:qmstart:109:root@pam:"
-      register: result_tatsks
+    # - name: List finished tasks on node01
+    #   community.proxmox.proxmox_tasks_info:
+    #     <<: *proxmox_auth
+    #     node: "{{ proxmox_node | default('proxmox01') }}"
+    #     source: all
+    #     #task: "UPID:proxmox01:002F0FB0:009B170F:69E00DBB:qmstart:109:root@pam:"
+    #   register: result_tatsks
+
+- name: get information about all vms in the cluster
+  uri:
+    url: "{{ api_host_url }}/cluster/tasks"
+    method: GET
+    headers: 
+      Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+    validate_certs: false
+  register: tmp
 
 
 
