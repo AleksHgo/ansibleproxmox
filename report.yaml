@@ -30,24 +30,67 @@
           - (proxmox_api_token_id is defined and proxmox_api_token_secret is defined) or (proxmox_api_password is defined)
         fail_msg: "Debes definir token (ID y Secret) o password para la API de Proxmox."
 
-    # - name: List finished tasks on node01
-    #   community.proxmox.proxmox_tasks_info:
-    #     <<: *proxmox_auth
-    #     node: "{{ proxmox_node | default('proxmox01') }}"
-    #     source: all
-    #     #task: "UPID:proxmox01:002F0FB0:009B170F:69E00DBB:qmstart:109:root@pam:"
-    #   register: result_tatsks
 
-    - name: get information about all vms in the cluster
+    - name: Obtener nodos Proxmox
       uri:
-        url: "{{ api_host_url }}/cluster/log"
+        url: "{{ api_host_url }}/nodes"
         method: GET
-        headers: 
-          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+        headers:
+          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
         validate_certs: false
-      register: tmp
+      register: proxmox_nodes
 
+    - name: Obtener VMs por nodo
+      uri:
+        url: "{{ api_host_url }}/nodes/{{ item.node }}/qemu"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+        validate_certs: false
+      loop: "{{ proxmox_nodes.json.data }}"
+      register: vm_summary
 
+    - name: Obtener config de cada VM (incluye ctime)
+      uri:
+        url: "{{ api_host_url }}/nodes/{{ item.0.item.node }}/qemu/{{ item.1.vmid }}/config"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+        validate_certs: false
+      loop: "{{ vm_summary.results | subelements('json.data') }}"
+      register: vm_config
+
+    - name: Construir reporte de VMs
+      set_fact:
+        reporte_vms: "{{ reporte_vms | default([]) + [ {
+          'node': item.0.item.node,
+          'vmid': item.1.json.data.vmid,
+          'name': item.1.json.data.name,
+          'status': item.1.json.data.status | default('unknown'),
+          'cpus': item.1.json.data.cores | default(0),
+          'ram_mb': (item.1.json.data.memory | default(0)),
+          'disk_gb': (item.1.json.data.scsi0.split(':')[1].split('=')[1].rstrip('G') | default('0')),
+          'created_at': (item.1.json.data.ctime | int | to_datetime('%s'))
+          } ] }}"
+      loop: "{{ vm_config.results | zip(vm_summary.results | subelements('json.data')) }}"
+
+    - debug:
+        msg: |
+          VM {{ item.vmid }} ({{ item.name }})
+          Nodo: {{ item.node }}
+          Estado: {{ item.status }}
+          CPUs: {{ item.cpus }}
+          RAM: {{ item.ram_mb }} MB
+          Creada: {{ item.created_at }}
+      loop: "{{ reporte_vms }}"
+
+    - copy:
+        dest: /tmp/reporte_proxmox.csv
+        content: |
+          node,vmid,name,status,cpus,ram_mb,disk_gb
+          {% for vm in reporte_vms %}
+          {{ vm.node }},{{ vm.vmid }},{{ vm.name }},{{ vm.status }},{{ vm.cpus }},{{ vm.ram_mb }},{{ vm.disk_gb }}
+          {% endfor %}
 
     # - name: Envia correo
     #   ansible.builtin.include_tasks: mailtask.yaml  

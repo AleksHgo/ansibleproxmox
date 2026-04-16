@@ -10,6 +10,8 @@
     from: "{{ mail_from }}"
     subject: "{{ mail_subject }}"
     body: "{{ mail_body_html }}"
+    attach: 
+      - /tmp/reporte_proxmox.csv
     subtype: html
     secure: starttls
   delegate_to: localhost
