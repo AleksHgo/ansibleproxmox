@@ -40,7 +40,7 @@
 
     - name: get information about all vms in the cluster
       uri:
-        url: "{{ api_host_url }}/cluster/tasks"
+        url: "{{ api_host_url }}/cluster/log"
         method: GET
         headers: 
           Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
