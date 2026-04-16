@@ -76,7 +76,7 @@ smtp_host: "smtp.office365.com"
 smtp_port: 587
 smtp_user: "arodriguez@icsicorp.com.mx"
 smtp_password: "msjwgmkyvwhyqynk"
-mail_from: "no-reply@icsicorp.com.mx"
+mail_from: "arodriguez@icsicorp.com.mx"
 mail_to:
   - "sguzman@icsicorp.com.mx"
 mail_subject: "Reporte automático de Ansible"
