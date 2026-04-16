@@ -57,6 +57,15 @@
           - "Estado: {{ vm_info_result.proxmox_vms[0].status }}"
       when: vm_info_result.proxmox_vms | length > 0    
 
+    - name: Start/Stop VM
+      community.proxmox.proxmox_kvm:
+        <<: *proxmox_auth
+        name: "{{ vm_name | default('ansible-vm') }}"        
+        state: "stopped"
+        timeout: 60 
+      when: vm_info_result.proxmox_vms | length > 0   
+      register: state_vm_result      
+
     - name: Remove VM 
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
@@ -73,6 +82,7 @@
 
     - name: Clonacion de VM
       ansible.builtin.include_tasks: cloneVMs.yaml
+      timeout: 90 
       loop: "{{ range(1, n_vms + 1) | list }}" 
       when: clone_vm       
       register: cl_result
