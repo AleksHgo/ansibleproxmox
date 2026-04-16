@@ -14,6 +14,7 @@
     api_host_url: "https://{{ proxmox_api_host }}:8006/api2/json"
     vm_id: null
     vm_new_id: null
+    my_timestamp: null
 
     proxmox_auth: &proxmox_auth
       api_host: "{{ proxmox_api_host }}"
@@ -115,8 +116,8 @@
     - name: Start/Stop VM
       community.proxmox.proxmox_kvm:
         <<: *proxmox_auth
-        name: "{{ 'Clone-' vm_template_name '-' my_timestamp | default('ansible-vm') }}"        
-        state: "{{ vm_state | default('started') }}"
+        name: "Clone-{{ vm_template_name }}-{{ my_timestamp }}"     
+        state: started 
         timeout: 60 
       when: vm_new_id is defined  
       register: state_vm_result      
