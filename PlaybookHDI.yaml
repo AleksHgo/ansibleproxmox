@@ -92,6 +92,12 @@
       ansible.builtin.pause:
         seconds: 180  # Ajusta este tiempo según el tamaño de la VM
 
+    - name: Mostrar información básica de la nueva VM
+      debug:
+        msg:
+          - "✅ La VM {{ vm_new_id }} existe"
+      when: vm_new_id is defined  
+
     - name: Agregar nueva interfaz  de red 
       community.proxmox.proxmox_nic:
         <<: *proxmox_auth
