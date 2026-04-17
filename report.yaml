@@ -36,7 +36,7 @@
         url: "{{ api_host_url }}/nodes"
         method: GET
         headers:
-          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"  
         validate_certs: false
       register: proxmox_nodes
 
@@ -45,7 +45,7 @@
         url: "{{ api_host_url }}/nodes/{{ item.node }}/qemu"
         method: GET
         headers:
-          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"  
         validate_certs: false
       loop: "{{ proxmox_nodes.json.data }}"
       register: vm_summary
