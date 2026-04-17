@@ -55,7 +55,7 @@
         url: "{{ api_host_url }}/nodes/{{ item.0.item.node }}/qemu/{{ item.1.vmid }}/config"
         method: GET
         headers:
-          Authorization: "PVEAPIToken={{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"
+          Authorization: "PVEAPIToken={{ proxmox_api_user }}!{{ proxmox_api_token_id }}={{ proxmox_api_token_secret }}"  
         validate_certs: false
       loop: "{{ vm_summary.results | subelements('json.data') }}"
       register: vm_config
