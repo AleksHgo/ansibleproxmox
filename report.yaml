@@ -64,13 +64,13 @@
       set_fact:
         reporte_vms: "{{ reporte_vms | default([]) + [ {
           'node': item.0.item.node,
-          'vmid': item.1.json.data.vmid,
-          'name': item.1.json.data.name,
-          'status': item.1.json.data.status | default('unknown'),
-          'cpus': item.1.json.data.cores | default(0),
-          'ram_mb': (item.1.json.data.memory | default(0)),
-          'disk_gb': (item.1.json.data.scsi0.split(':')[1].split('=')[1].rstrip('G') | default('0')),
-          'created_at': (item.1.json.data.ctime | int | to_datetime('%s'))
+          'vmid': item.1.vmid,
+          'name': item.1.name,
+          'status': item.1.status | default('unknown'),
+          'cpus': item.1.cores | default(0),
+          'ram_mb': (item.1.memory | default(0)),
+          'disk_gb': (item.1.scsi0.split(':')[1].split('=')[1].rstrip('G') | default('0')),
+          'created_at': (item.1.ctime | int | to_datetime('%s'))
           } ] }}"
       loop: "{{ vm_config.results | zip(vm_summary.results | subelements('json.data')) }}"
 
