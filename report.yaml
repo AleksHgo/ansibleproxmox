@@ -68,8 +68,7 @@
           'name': item.1.name,
           'status': item.1.status | default('unknown'),
           'cpus': item.1.cores | default(0),
-          'ram_mb': (item.1.memory | default(0)),
-          'disk_gb': (item.1.scsi0.split(':')[1].split('=')[1].rstrip('G') | default('0')),
+          'ram_mb': (item.1.memory | default(0)),    
           'created_at': (item.1.ctime | int | to_datetime('%s'))
           } ] }}"
       loop: "{{ vm_config.results | zip(vm_summary.results | subelements('json.data')) }}"
@@ -91,6 +90,10 @@
           {% for vm in reporte_vms %}
           {{ vm.node }},{{ vm.vmid }},{{ vm.name }},{{ vm.status }},{{ vm.cpus }},{{ vm.ram_mb }},{{ vm.disk_gb }}
           {% endfor %}
+
+
+# 'disk_gb': (item.1.scsi0.split(':')[1].split('=')[1].rstrip('G') | default('0')),
+
 
     # - name: Envia correo
     #   ansible.builtin.include_tasks: mailtask.yaml  
