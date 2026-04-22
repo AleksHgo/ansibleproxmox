@@ -1,0 +1,28 @@
+---
+- name: Obtener token de autenticación de OpenShift
+  hosts: localhost
+  gather_facts: no
+  vars:
+    openshift_api_url: "https://api.icsiocp.icsicorp.com.mx:6443"
+    openshift_user: "kubeadmin"
+    openshift_password: "DE5Ld-MZpxh-p9qmA-7QHvp"
+  tasks:
+
+    - name: Login a OpenShift
+      command: >
+        oc login
+        --username={{ openshift_user }}
+        --password={{ openshift_password }}
+        --server={{ openshift_api_url }}
+        --insecure-skip-tls-verify=true
+      register: login_result
+      no_log: true
+
+    - name: Obtener token actual
+      command: oc whoami -t
+      register: token_result
+      no_log: true
+
+    - name: Mostrar token
+      debug:
+        msg: "Token de OpenShift: {{ token_result.stdout }}"
