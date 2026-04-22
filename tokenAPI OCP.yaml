@@ -15,7 +15,7 @@
         password: "{{ oopenshift_password }}"
         validate_certs: false
       register: openshift_auth_results
-      no_log: true
+      no_log: false
 
     - name: Mostrar token
       debug:
