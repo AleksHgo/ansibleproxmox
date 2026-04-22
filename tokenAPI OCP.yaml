@@ -16,7 +16,7 @@
         --server={{ openshift_api_url }}
         --insecure-skip-tls-verify=true
       register: login_result
-      no_log: true
+      no_log: false
 
     - name: Obtener token actual
       command: oc whoami -t
