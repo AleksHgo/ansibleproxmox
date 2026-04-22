@@ -8,21 +8,14 @@
     openshift_password: "DE5Ld-MZpxh-p9qmA-7QHvp"
   tasks:
 
-    - name: Login a OpenShift
-      command: >
-        oc login
-        --username={{ openshift_user }}
-        --password={{ openshift_password }}
-        --server={{ openshift_api_url }}
-        --insecure-skip-tls-verify=true
-      register: login_result
-      no_log: false
+    - name: Generate OpenShift token
+      community.okd.openshift_auth:
+        host: "[{{ openshift_api_url }}]"
+        username: "{{ openshift_user }}"
+        password: "{{ openshift_password }}"
+        validate_certs: false
+      register: auth_info
 
-    - name: Obtener token actual
-      command: oc whoami -t
-      register: token_result
-      no_log: true
-
-    - name: Mostrar token
-      debug:
-        msg: "Token de OpenShift: {{ token_result.stdout }}"
+    - name: Use the generated token
+      set_fact:
+        ocp_token: "{{ auth_info.openshift_auth.api_key }}"
